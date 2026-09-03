@@ -6,6 +6,8 @@ import {
   validateApplication,
   type ApplicationInput,
 } from "@/lib/validate";
+import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
+import { COLLECTIONS } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
 /**
@@ -120,13 +122,37 @@ export async function POST(request: Request) {
     receivedAt: new Date().toISOString(),
   };
 
-  // Visible dans le terminal `next dev` et dans les logs de l'hébergeur.
-  console.log("[apply] nouvelle candidature", application);
+  // --- Persistance ---
+  //
+  // C'était le seul vrai bug en production : les candidatures n'étaient que
+  // journalisées, donc perdues au redémarrage. Elles sont désormais écrites
+  // dans Firestore, où l'admin les relit.
+  if (isAdminConfigured) {
+    const db = adminDb();
+    if (db) {
+      try {
+        await db.collection(COLLECTIONS.applications).add({
+          ...application,
+          createdAt: Date.now(),
+          status: "new",
+          notes: "",
+        });
+      } catch (e) {
+        // Écriture impossible : on journalise pour ne pas perdre la
+        // candidature, et on répond quand même OK. Faire échouer l'envoi
+        // ferait fuir un studio pour un problème qui n'est pas le sien.
+        console.error("[apply] échec d'écriture Firestore", e);
+        console.log("[apply] candidature non persistée", application);
+      }
+    }
+  } else {
+    // Sans configuration serveur, on retombe sur la journalisation.
+    console.log("[apply] nouvelle candidature (non persistée)", application);
+  }
 
   // ------------------------------------------------------------------
-  // TODO — brancher une destination réelle avant la mise en production.
-  // Sans cela, les candidatures ne sont que journalisées : un redémarrage
-  // du serveur les perd définitivement.
+  // TODO — notification. Les candidatures sont persistées dans Firestore
+  // et visibles dans /admin, mais personne n'est prévenu à leur arrivée.
   //
   // 1) Email de notification (Resend) :
   //    import { Resend } from "resend";

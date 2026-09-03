@@ -289,6 +289,17 @@ export const fr: Content = {
     },
   },
 
+  blog: {
+    title: "Le blog",
+    intro:
+      "Ce qu'on apprend en fabriquant des éditions physiques : coulisses d'atelier, retours de studios, et l'état d'un marché qu'on découvre en le construisant.",
+    empty: "Aucun article pour le moment. Revenez bientôt.",
+    sponsored: "Sponsorisé",
+    sponsoredBy: "En partenariat avec",
+    backToBlog: "Retour au blog",
+    readMore: "Lire l'article",
+  },
+
   faq: {
     title: "Questions fréquentes",
     items: [

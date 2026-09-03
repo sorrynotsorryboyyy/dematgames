@@ -33,6 +33,8 @@ export const ROUTES = {
   cart: { fr: "panier", en: "cart" },
   account: { fr: "compte", en: "account" },
   login: { fr: "connexion", en: "login" },
+  blog: { fr: "blog", en: "blog" },
+  admin: { fr: "admin", en: "admin" },
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

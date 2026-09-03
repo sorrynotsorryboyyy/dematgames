@@ -254,6 +254,18 @@ export interface Content {
     };
   };
 
+  blog: {
+    title: string;
+    intro: string;
+    empty: string;
+    /** Mention légale des contenus publicitaires (art. 20 LCEN). */
+    sponsored: string;
+    /** « En partenariat avec X » sur la fiche d'un article sponsorisé. */
+    sponsoredBy: string;
+    backToBlog: string;
+    readMore: string;
+  };
+
   faq: {
     title: string;
     items: Item[];

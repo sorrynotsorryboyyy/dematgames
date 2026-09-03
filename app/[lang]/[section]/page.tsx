@@ -3,7 +3,10 @@ import { Header } from "@/components/layout/Header";
 import { AccountView } from "@/components/account/AccountView";
 import { AuthView } from "@/components/account/AuthView";
 import { CartView } from "@/components/shop/CartView";
+import { AdminShell } from "@/components/admin/AdminShell";
+import { BlogIndex } from "@/components/blog/BlogIndex";
 import { ShopCatalogue } from "@/components/shop/ShopCatalogue";
+import { listCategories, listPosts } from "@/lib/blog";
 import { PRICING_IS_INDICATIVE } from "@/content/games";
 import { isLang, LANGS, type Lang } from "@/content/types";
 import { brandAssets } from "@/lib/brand";
@@ -20,7 +23,7 @@ import { notFound } from "next/navigation";
  * d'une langue ne demande pas de créer de nouveaux répertoires.
  */
 
-type SectionKey = "shop" | "cart" | "account" | "login";
+type SectionKey = "shop" | "cart" | "account" | "login" | "blog" | "admin";
 
 /** Retrouve la section à partir du segment ET vérifie qu'il correspond à la langue. */
 function resolveSection(segment: string, lang: Lang): SectionKey | null {
@@ -55,6 +58,8 @@ export async function generateMetadata({
     cart: t.cart.title,
     account: t.account.title,
     login: t.account.auth.loginTitle,
+    blog: t.blog.title,
+    admin: "Administration",
   };
   const title = `${titles[key]} — dematgames.com`;
 
@@ -69,7 +74,12 @@ export async function generateMetadata({
       ),
     },
     // Panier, compte et connexion sont des pages d'état : rien à indexer.
-    robots: key === "shop" ? { index: true, follow: true } : { index: false, follow: true },
+    // Boutique et blog sont indexables ; panier, compte, connexion et
+    // surtout /admin ne doivent jamais apparaître dans un moteur.
+    robots:
+      key === "shop" || key === "blog"
+        ? { index: true, follow: true }
+        : { index: false, follow: false },
   };
 }
 
@@ -113,6 +123,20 @@ export default async function SectionPage({
               <ShopCatalogue lang={lang} t={t} />
             </>
           )}
+
+          {key === "blog" && (
+            <BlogIndex
+              lang={lang}
+              t={t}
+              posts={await listPosts(lang)}
+              categories={await listCategories()}
+            />
+          )}
+
+          {/* L'admin est protégé côté SERVEUR dans chaque route
+              /api/admin/* : ce composant ne fait qu'éviter d'afficher une
+              coquille vide à qui n'a pas les droits. */}
+          {key === "admin" && <AdminShell lang={lang} />}
 
           {key === "cart" && <CartView lang={lang} t={t} />}
           {key === "account" && <AccountView lang={lang} t={t} />}

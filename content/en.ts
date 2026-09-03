@@ -282,6 +282,17 @@ export const en: Content = {
     },
   },
 
+  blog: {
+    title: "The blog",
+    intro:
+      "What we learn making physical editions: workshop notes, studio stories, and the state of a market we're discovering as we build it.",
+    empty: "No articles yet. Come back soon.",
+    sponsored: "Sponsored",
+    sponsoredBy: "In partnership with",
+    backToBlog: "Back to the blog",
+    readMore: "Read the article",
+  },
+
   faq: {
     title: "Frequently asked questions",
     items: [
