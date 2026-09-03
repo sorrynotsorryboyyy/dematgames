@@ -14,7 +14,7 @@ import type { Content } from "./types";
  */
 export const fr: Content = {
   meta: {
-    title: "dematgames.gg — Votre jeu mérite une boîte",
+    title: "dematgames.com — Votre jeu mérite une boîte",
     description:
       "Transformez votre jeu indépendant en édition physique : boîtier, jaquette, livret, goodies. Fabrication à la demande dès 50 exemplaires, sans stock ni logistique à gérer.",
     keywords: [
@@ -26,7 +26,7 @@ export const fr: Content = {
       "édition collector indie",
       "dematgames",
     ],
-    ogAlt: "dematgames.gg — Votre jeu mérite une boîte",
+    ogAlt: "dematgames.com — Votre jeu mérite une boîte",
   },
 
   nav: {
@@ -65,26 +65,6 @@ export const fr: Content = {
     scrollHint: "Découvrir",
   },
 
-  problem: {
-    titleLines: ["Les jeux indés sont partout.", "Sauf sur nos étagères."],
-    body: "Une équipe de trois personnes peut aujourd'hui toucher des dizaines de milliers de joueurs. Mais dès qu'il s'agit d'une édition physique, elle se heurte aux mêmes murs : des minimums de production calibrés pour de gros éditeurs, une trésorerie à immobiliser, et un métier logistique qu'elle n'a jamais choisi d'exercer.",
-    cards: [
-      {
-        title: "Des minimums démesurés",
-        body: "Les presses traditionnelles démarrent à plusieurs centaines d'exemplaires. C'est plusieurs milliers d'euros avancés avant la première vente.",
-      },
-      {
-        title: "Un second métier",
-        body: "Stocker des cartons, imprimer des bordereaux, gérer les retours : autant d'heures qui ne vont pas dans votre jeu.",
-      },
-      {
-        title: "Le mauvais calcul",
-        body: "Votre communauté est fidèle sans être immense. Sur ce volume, une édition physique classique n'est jamais rentable.",
-      },
-    ],
-    transition: "dematgames.gg lève ces trois obstacles.",
-  },
-
   how: {
     title: "Du premier message à la boîte.",
     intro:
@@ -108,7 +88,8 @@ export const fr: Content = {
       {
         n: "04",
         title: "Pressage à la demande",
-        body: "Chaque exemplaire est produit quand il est commandé. Aucun stock dormant, aucune trésorerie immobilisée.",
+        body: "Vous n'avancez rien. Ni pressage, ni impression, ni stock : nous finançons la production, et chaque exemplaire est fabriqué quand il est commandé.",
+        note: "Vous touchez un pourcentage sur chaque vente. Le détail se définit ensemble, selon le format et le volume.",
       },
       {
         n: "05",
@@ -129,18 +110,18 @@ export const fr: Content = {
 
   whyNow: {
     eyebrow: "Pourquoi maintenant ?",
-    lineDigital: "Le numérique est pratique.",
-    linePhysical: "Le physique se transmet.",
+    lineDigital: "Vos jeux ne vous appartiennent pas.",
+    linePhysical: "Une boîte, si.",
     quote:
-      "Un téléchargement se perd dans une bibliothèque de six cents titres. Une boîte reste sur une étagère, à hauteur de regard.",
-    body: "Le vinyle et le livre papier n'ont pas disparu face au streaming : ils sont devenus des objets qu'on choisit d'acheter. Nous pensons que les jeux indépendants méritent le même statut — une expérience numérique, et un objet qu'on offre, qu'on prête et qu'on garde.",
+      "Une boutique ferme, un compte est suspendu, une licence expire — et une bibliothèque entière disparaît. Personne ne peut effacer un objet posé sur une étagère.",
+    body: "Acheter un jeu en ligne, c'est acheter un droit d'accès : révocable, non transmissible, dépendant d'un service qui doit rester ouvert. Un exemplaire physique appartient à celui qui l'a acheté. Il se prête, s'offre, se revend, et survit à la plateforme qui l'a vendu.",
     shelfCaption: "Une étagère de jeux indépendants en édition physique.",
   },
 
   founding: {
     eyebrow: "Studios fondateurs",
-    title: "Nous cherchons les 20 premiers jeux.",
-    body: "dematgames.gg démarre. Nous ouvrons vingt places à des studios indépendants qui veulent construire ce service avec nous : formats, tarifs, calendrier. Vos retours façonneront ce que devient la plateforme.",
+    title: "Nous ne cherchons pas un nombre.",
+    body: "Nous cherchons des jeux qu'on a envie de tenir en main. Peu importe la taille de votre communauté : ce qui compte, c'est que l'objet ait du sens pour elle. Parlez-nous du vôtre — nous répondons à chacun.",
     ctaNote: "Gratuit · Sans engagement · Réponse sous quelques jours",
     form: {
       name: {
@@ -213,6 +194,10 @@ export const fr: Content = {
       },
       sectionGame: "Votre jeu",
       sectionYou: "Vous",
+      stepBack: "Retour",
+      stepSkip: "Passer",
+      stepProgress: "{i} sur {n}",
+      lastStepTitle: "Où vous joindre ?",
       submit: "Proposer mon jeu",
       submitting: "Envoi en cours…",
       required: "obligatoire",
@@ -222,7 +207,7 @@ export const fr: Content = {
         "Merci — nous revenons vers vous sous quelques jours pour parler de votre jeu et de l'édition qui lui irait.",
       errorTitle: "L'envoi a échoué.",
       errorBody:
-        "Le problème vient de chez nous. Réessayez dans un instant, ou écrivez-nous directement à hello@dematgames.gg.",
+        "Le problème vient de chez nous. Réessayez dans un instant, ou écrivez-nous directement à hello@dematgames.com.",
       retry: "Réessayer",
       honeypotLabel: "Laissez ce champ vide",
     },
@@ -248,6 +233,11 @@ export const fr: Content = {
     includes: "Dans la boîte",
     byStudio: "Par",
     releasedIn: "Sorti en",
+    kindHardware: "Matériel",
+    kindBundle: "Pack",
+    productsTitle: "Accessoires et packs",
+    pickGame: "Choisissez votre jeu",
+    pickGamePlaceholder: "Sélectionnez un titre du catalogue",
   },
 
   cart: {
@@ -260,7 +250,7 @@ export const fr: Content = {
     shippingNote: "Frais de port calculés à la commande.",
     closedTitle: "La boutique n'est pas encore ouverte.",
     closedBody:
-      "Ce parcours est une démonstration : aucun paiement n'est possible et aucune commande ne sera enregistrée. Nous cherchons les vingt premiers jeux à produire — si vous en développez un, c'est le moment de nous écrire.",
+      "Ce parcours est une démonstration : aucun paiement n'est possible et aucune commande ne sera enregistrée. Nous sélectionnons en ce moment les premiers studios partenaires — si vous développez un jeu, c'est le moment de nous écrire.",
     closedCta: "Proposer mon jeu",
     checkoutDisabled: "Paiement bientôt disponible",
   },
@@ -281,7 +271,7 @@ export const fr: Content = {
     noOrders:
       "Aucune commande pour l'instant. La boutique ouvrira avec les premiers jeux produits.",
     noGames:
-      "Vous n'avez pas encore de jeu chez nous. Vingt places sont ouvertes aux studios fondateurs.",
+      "Vous n'avez pas encore de jeu chez nous. Nous sélectionnons en continu de nouveaux studios partenaires.",
     noGamesCta: "Proposer mon jeu",
     auth: {
       loginTitle: "Connexion",
@@ -291,11 +281,11 @@ export const fr: Content = {
       privacy:
         "Nous récupérons votre nom, votre email et votre photo de profil Google. Rien d'autre, et jamais votre mot de passe.",
       unavailable:
-        "La connexion est momentanément indisponible. Réessayez dans quelques minutes, ou écrivez-nous à hello@dematgames.gg.",
+        "La connexion est momentanément indisponible. Réessayez dans quelques minutes, ou écrivez-nous à hello@dematgames.com.",
       errorNetwork:
         "Connexion au réseau impossible. Vérifiez votre connexion et réessayez.",
       errorUnknown:
-        "La connexion a échoué. Réessayez, ou écrivez-nous à hello@dematgames.gg.",
+        "La connexion a échoué. Réessayez, ou écrivez-nous à hello@dematgames.com.",
     },
   },
 
@@ -311,8 +301,8 @@ export const fr: Content = {
         body: "Nous, de bout en bout. Pressage, impression, emballage, envoi au joueur et suivi du colis. Vous n'avez ni carton à manipuler ni bordereau à imprimer.",
       },
       {
-        title: "Combien ça coûte ?",
-        body: "Nous ne le fixons pas seuls : la grille se construit avec les premiers studios partenaires, en fonction des formats et des volumes réels. C'est l'une des raisons pour lesquelles nous cherchons vingt jeux avant d'ouvrir.",
+        title: "Combien ça me coûte ?",
+        body: "Rien à l'avance. Nous finançons le pressage, l'impression et le stock ; vous touchez un pourcentage sur chaque exemplaire vendu. Le détail se fixe ensemble, selon le format et le volume — nous préférons en discuter plutôt que d'afficher une grille qui ne collerait à personne.",
       },
       {
         title: "Vers quels pays expédiez-vous ?",

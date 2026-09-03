@@ -6,6 +6,7 @@ import { CartView } from "@/components/shop/CartView";
 import { ShopCatalogue } from "@/components/shop/ShopCatalogue";
 import { PRICING_IS_INDICATIVE } from "@/content/games";
 import { isLang, LANGS, type Lang } from "@/content/types";
+import { brandAssets } from "@/lib/brand";
 import { getContent, ROUTES, SITE_URL } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -55,7 +56,7 @@ export async function generateMetadata({
     account: t.account.title,
     login: t.account.auth.loginTitle,
   };
-  const title = `${titles[key]} — dematgames.gg`;
+  const title = `${titles[key]} — dematgames.com`;
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -94,7 +95,7 @@ export default async function SectionPage({
         {t.nav.skipToContent}
       </a>
 
-      <Header lang={lang} t={t} />
+      <Header lang={lang} t={t} brand={brandAssets()} />
 
       <main id="main" className="pt-[4.5rem]">
         <div className="mx-auto w-full max-w-[1180px] px-5 py-14 sm:px-8 md:py-20 lg:px-12">

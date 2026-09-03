@@ -10,7 +10,7 @@ import type { Content } from "./types";
  */
 export const en: Content = {
   meta: {
-    title: "dematgames.gg — Your game deserves a box",
+    title: "dematgames.com — Your game deserves a box",
     description:
       "Turn your indie game into a physical edition: case, cover art, booklet, extras. Made on demand from 50 copies, with no stock to front and no logistics to run.",
     keywords: [
@@ -22,7 +22,7 @@ export const en: Content = {
       "indie collector edition",
       "dematgames",
     ],
-    ogAlt: "dematgames.gg — Your game deserves a box",
+    ogAlt: "dematgames.com — Your game deserves a box",
   },
 
   nav: {
@@ -59,26 +59,6 @@ export const en: Content = {
     scrollHint: "Explore",
   },
 
-  problem: {
-    titleLines: ["Indie games are everywhere.", "Except on our shelves."],
-    body: "A team of three can reach tens of thousands of players today. But the moment a physical edition comes up, they hit the same walls: minimum runs priced for major publishers, cash tied up months ahead of the first sale, and a logistics job nobody signed up for.",
-    cards: [
-      {
-        title: "Minimums built for majors",
-        body: "Traditional pressing plants start at several hundred copies. That's thousands of euros spent before anyone has bought a single one.",
-      },
-      {
-        title: "A second job",
-        body: "Storing boxes, printing labels, handling returns — every hour of it is an hour not spent on your game.",
-      },
-      {
-        title: "The maths never works",
-        body: "Your community is loyal without being huge. At that scale, a traditional physical run simply doesn't add up.",
-      },
-    ],
-    transition: "dematgames.gg removes all three.",
-  },
-
   how: {
     title: "From first message to box.",
     intro:
@@ -102,7 +82,8 @@ export const en: Content = {
       {
         n: "04",
         title: "Pressed on demand",
-        body: "Every copy is made when it's ordered. No dormant stock, no cash tied up.",
+        body: "You front nothing. Not the pressing, not the printing, not the stock: we fund production, and every copy is made when it's ordered.",
+        note: "You earn a share of every sale. The details are agreed together, based on format and volume.",
       },
       {
         n: "05",
@@ -123,18 +104,18 @@ export const en: Content = {
 
   whyNow: {
     eyebrow: "Why now?",
-    lineDigital: "Digital is convenient.",
-    linePhysical: "Physical gets passed on.",
+    lineDigital: "Your games aren't yours.",
+    linePhysical: "A box is.",
     quote:
-      "A download vanishes into a library of six hundred titles. A box stays on a shelf, at eye level.",
-    body: "Vinyl and print didn't die when streaming arrived — they became things people choose to own. Indie games deserve the same standing: a digital experience, and an object you can gift, lend and keep.",
+      "A storefront closes, an account gets suspended, a licence expires — and a whole library is gone. Nobody can delete an object sitting on a shelf.",
+    body: "Buying a game online means buying access: revocable, non-transferable, dependent on a service staying open. A physical copy belongs to whoever bought it. It can be lent, gifted, resold — and it outlives the platform that sold it.",
     shelfCaption: "A shelf of indie games in physical editions.",
   },
 
   founding: {
     eyebrow: "Founding studios",
-    title: "We're looking for the first 20 games.",
-    body: "dematgames.gg is just starting. We're opening twenty places to independent studios who want to build this service with us — formats, pricing, timelines. What you tell us shapes what the platform becomes.",
+    title: "We're not looking for a number.",
+    body: "We're looking for games people will want to hold. The size of your community matters less than whether the object means something to them. Tell us about yours — we reply to everyone.",
     ctaNote: "Free · No commitment · We reply within a few days",
     form: {
       name: {
@@ -207,6 +188,10 @@ export const en: Content = {
       },
       sectionGame: "Your game",
       sectionYou: "You",
+      stepBack: "Back",
+      stepSkip: "Skip",
+      stepProgress: "{i} of {n}",
+      lastStepTitle: "How do we reach you?",
       submit: "Submit my game",
       submitting: "Sending…",
       required: "required",
@@ -216,7 +201,7 @@ export const en: Content = {
         "Thank you — we'll come back to you within a few days to talk about your game and the edition that would suit it.",
       errorTitle: "That didn't send.",
       errorBody:
-        "The problem is on our side. Try again in a moment, or email us directly at hello@dematgames.gg.",
+        "The problem is on our side. Try again in a moment, or email us directly at hello@dematgames.com.",
       retry: "Try again",
       honeypotLabel: "Leave this field empty",
     },
@@ -242,6 +227,11 @@ export const en: Content = {
     includes: "In the box",
     byStudio: "By",
     releasedIn: "Released in",
+    kindHardware: "Hardware",
+    kindBundle: "Bundle",
+    productsTitle: "Accessories and bundles",
+    pickGame: "Choose your game",
+    pickGamePlaceholder: "Pick a title from the catalogue",
   },
 
   cart: {
@@ -254,7 +244,7 @@ export const en: Content = {
     shippingNote: "Shipping calculated at checkout.",
     closedTitle: "The shop isn't open yet.",
     closedBody:
-      "This flow is a demonstration: no payment is possible and no order will be recorded. We're looking for the first twenty games to produce — if you're building one, now is the time to write to us.",
+      "This flow is a demonstration: no payment is possible and no order will be recorded. We're currently selecting our first partner studios — if you're building a game, now is the time to write to us.",
     closedCta: "Submit my game",
     checkoutDisabled: "Checkout coming soon",
   },
@@ -274,7 +264,7 @@ export const en: Content = {
     noOrders:
       "No orders yet. The shop will open with the first games we produce.",
     noGames:
-      "You don't have a game with us yet. Twenty places are open to founding studios.",
+      "You don't have a game with us yet. We're selecting new partner studios on an ongoing basis.",
     noGamesCta: "Submit my game",
     auth: {
       loginTitle: "Sign in",
@@ -284,11 +274,11 @@ export const en: Content = {
       privacy:
         "We receive your name, email and Google profile picture. Nothing else, and never your password.",
       unavailable:
-        "Sign-in is temporarily unavailable. Try again in a few minutes, or email us at hello@dematgames.gg.",
+        "Sign-in is temporarily unavailable. Try again in a few minutes, or email us at hello@dematgames.com.",
       errorNetwork:
         "Could not reach the network. Check your connection and try again.",
       errorUnknown:
-        "Sign-in failed. Try again, or email us at hello@dematgames.gg.",
+        "Sign-in failed. Try again, or email us at hello@dematgames.com.",
     },
   },
 
@@ -304,8 +294,8 @@ export const en: Content = {
         body: "We do, end to end. Pressing, printing, packing, delivery to the player and parcel tracking. No boxes to handle, no labels to print on your side.",
       },
       {
-        title: "What does it cost?",
-        body: "We're not setting that alone: pricing is being built with our first partner studios, based on real formats and volumes. It's one of the reasons we want twenty games on board before opening.",
+        title: "What does it cost me?",
+        body: "Nothing up front. We fund the pressing, the printing and the stock; you earn a share of every copy sold. The details are agreed together, based on format and volume — we'd rather talk it through than publish a grid that fits nobody.",
       },
       {
         title: "Which countries do you ship to?",

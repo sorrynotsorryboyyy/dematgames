@@ -1,5 +1,7 @@
 "use client";
 
+import { Logo } from "@/components/layout/Logo";
+import type { BrandAssets } from "@/lib/brand";
 import { CartBadge } from "@/components/shop/CartBadge";
 import { ButtonLink } from "@/components/ui/Button";
 import type { Content, Lang } from "@/content/types";
@@ -14,7 +16,15 @@ import { useEffect, useState } from "react";
  * Le switch de langue est un simple <Link> vers la même page dans l'autre
  * langue — aucun JS de traduction, les deux pages sont statiques.
  */
-export function Header({ lang, t }: { lang: Lang; t: Content }) {
+export function Header({
+  lang,
+  t,
+  brand,
+}: {
+  lang: Lang;
+  t: Content;
+  brand: BrandAssets;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, ready } = useSession();
@@ -57,12 +67,7 @@ export function Header({ lang, t }: { lang: Lang; t: Content }) {
       }`}
     >
       <div className="mx-auto flex h-[4.5rem] w-full max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
-        <Link
-          href={home}
-          className="font-display text-[1.02rem] font-bold tracking-tight text-chalk"
-        >
-          dematgames<span className="text-ember">.gg</span>
-        </Link>
+        <Logo href={home} assets={brand} />
 
         <nav aria-label={t.footer.navTitle} className="hidden items-center gap-7 lg:flex">
           {links.map((link) => (

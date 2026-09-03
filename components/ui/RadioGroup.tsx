@@ -22,21 +22,35 @@ export function RadioGroup({
   name,
   value,
   onChange,
+  hideLabel = false,
 }: {
   choice: Choice;
   name: string;
   value: string;
   onChange: (value: string) => void;
+  /**
+   * Masque la légende VISUELLEMENT, sans la retirer du DOM.
+   *
+   * Sert quand la question est déjà affichée en titre au-dessus : la répéter
+   * ferait doublon à l'écran. Mais un <fieldset> sans <legend> perd son
+   * intitulé pour les lecteurs d'écran — d'où `sr-only` plutôt qu'un
+   * retrait pur et simple.
+   */
+  hideLabel?: boolean;
 }) {
   const uid = useId();
 
   return (
     <fieldset>
-      <legend className="text-[0.9rem] font-medium text-chalk">
+      <legend
+        className={
+          hideLabel ? "sr-only" : "text-[0.9rem] font-medium text-chalk"
+        }
+      >
         {choice.label}
       </legend>
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className={`flex flex-wrap gap-2 ${hideLabel ? "" : "mt-3"}`}>
         {choice.options.map((option) => {
           const id = `${uid}-${option}`;
           const selected = value === option;

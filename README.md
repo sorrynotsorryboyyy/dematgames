@@ -1,6 +1,6 @@
-# dematgames.gg
+# dematgames.com
 
-Site de **validation de marché** pour dematgames.gg : transformer les jeux
+Site de **validation de marché** pour dematgames.com : transformer les jeux
 indés en éditions physiques, fabriquées à la demande.
 
 Ce n'est pas encore une marketplace. L'objectif reste de convaincre un
@@ -22,7 +22,7 @@ développeur indépendant de **laisser son email** et d'ouvrir la discussion
 >   n'est **pas** une route protégée.
 > - **Prix indicatifs.** Voir `PRICING_IS_INDICATIVE` dans `content/games.ts`.
 > - **Catalogue fictif.** Les cinq jeux sont inventés, pour ne pas afficher de
->   vrais titres que dematgames.gg ne distribue pas.
+>   vrais titres que dematgames.com ne distribue pas.
 
 ## Démarrer
 

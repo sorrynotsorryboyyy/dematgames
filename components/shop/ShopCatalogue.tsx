@@ -1,6 +1,8 @@
 "use client";
 
 import { GameCard } from "@/components/shop/GameCard";
+import { ProductCard } from "@/components/shop/ProductCard";
+import { PRODUCTS } from "@/content/products";
 import { CATEGORIES, type CategoryId } from "@/content/categories";
 import { GAMES } from "@/content/games";
 import type { Content, Lang } from "@/content/types";
@@ -69,6 +71,20 @@ export function ShopCatalogue({ lang, t }: { lang: Lang; t: Content }) {
           ))}
         </ul>
       )}
+
+      {/* Accessoires et packs — dans leur propre bloc plutôt que mêlés à la
+          grille : les filtres de catégorie ne s'appliquent qu'aux jeux, et
+          les compter dans les résultats fausserait le décompte. */}
+      <section className="mt-16 border-t border-slate pt-12">
+        <h2 className="display display-md text-chalk">{t.shop.productsTitle}</h2>
+        <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {PRODUCTS.map((product) => (
+            <li key={product.slug}>
+              <ProductCard product={product} lang={lang} t={t} />
+            </li>
+          ))}
+        </ul>
+      </section>
     </>
   );
 }

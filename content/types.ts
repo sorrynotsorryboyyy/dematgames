@@ -107,13 +107,6 @@ export interface Content {
     scrollHint: string;
   };
 
-  problem: {
-    titleLines: [string, string];
-    body: string;
-    cards: Item[];
-    transition: string;
-  };
-
   how: {
     title: string;
     intro: string;
@@ -164,6 +157,13 @@ export interface Content {
       /** Titres des blocs du formulaire. */
       sectionGame: string;
       sectionYou: string;
+      /** Navigation du formulaire multi-écrans. */
+      stepBack: string;
+      stepSkip: string;
+      /** « 2 sur 5 » — gabarit, les deux jetons sont remplacés. */
+      stepProgress: string;
+      /** Titre du dernier écran, qui regroupe les coordonnées. */
+      lastStepTitle: string;
       submit: string;
       submitting: string;
       required: string;
@@ -198,6 +198,14 @@ export interface Content {
     includes: string;
     byStudio: string;
     releasedIn: string;
+    /** Puces de nature de produit. */
+    kindHardware: string;
+    kindBundle: string;
+    /** Titre du bloc « accessoires et packs » dans le catalogue. */
+    productsTitle: string;
+    /** Sélecteur de jeu sur la fiche d'un pack. */
+    pickGame: string;
+    pickGamePlaceholder: string;
   };
 
   cart: {

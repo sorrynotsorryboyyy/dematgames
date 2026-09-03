@@ -3,7 +3,7 @@ import type { Lang } from "./types";
 /**
  * Catégories de jeux.
  *
- * dematgames.gg doit accueillir aussi bien un FPS nerveux qu'un jeu pour
+ * dematgames.com doit accueillir aussi bien un FPS nerveux qu'un jeu pour
  * enfants. L'interface reste neutre ; c'est la catégorie qui apporte la
  * couleur, jamais le site lui-même.
  *

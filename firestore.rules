@@ -1,7 +1,7 @@
 rules_version = '2';
 
 /**
- * Règles de sécurité Firestore — dematgames.gg
+ * Règles de sécurité Firestore — dematgames.com
  *
  * À déployer depuis la console Firebase (Firestore → Règles) ou via
  * `firebase deploy --only firestore:rules`.

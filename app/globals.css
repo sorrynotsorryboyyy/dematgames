@@ -366,6 +366,82 @@ body {
 }
 
 /* ------------------------------------------------------------------
+   Pictogrammes du formulaire (components/form/QuestionIcon.tsx)
+
+   Le tracé se dessine à l'apparition. `pathLength: 1` normalise toutes les
+   longueurs de tracé à 1, ce qui permet d'utiliser les mêmes valeurs de
+   dasharray quel que soit le dessin — sans cela, chaque icône demanderait
+   son propre réglage.
+   ------------------------------------------------------------------ */
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.draw-in > * {
+  pathLength: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 0.7s var(--ease-out-expo) forwards;
+}
+
+/* Chaque trait part légèrement après le précédent. */
+.draw-in > *:nth-child(2) { animation-delay: 0.1s; }
+.draw-in > *:nth-child(3) { animation-delay: 0.2s; }
+.draw-in > *:nth-child(4) { animation-delay: 0.3s; }
+
+/* ------------------------------------------------------------------
+   FAQ — cartes qui se retournent (components/sections/Faq.tsx)
+
+   Le verso reste dans le DOM en permanence : c'est `backface-visibility`
+   qui le masque, pas un démontage. Sans cela, tout le contenu de la FAQ
+   serait invisible pour les moteurs de recherche.
+   ------------------------------------------------------------------ */
+.flip-scene {
+  perspective: 1400px;
+}
+
+.flip-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  /* Hauteur fixe : les deux faces sont superposées en absolu, le conteneur
+     n'a donc aucune hauteur naturelle à reprendre. */
+  min-height: 13rem;
+  transform-style: preserve-3d;
+  transition: transform 0.6s var(--ease-out-expo);
+  cursor: pointer;
+}
+
+.flip-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  overflow: auto;
+}
+
+.flip-back {
+  transform: rotateY(180deg);
+}
+
+/* Le « + » pivote en croix quand la carte est retournée. */
+.flip-card.is-flipped .flip-face:first-child span:last-child {
+  transform: rotate(45deg);
+}
+
+@media (min-width: 768px) {
+  .flip-card {
+    min-height: 14rem;
+  }
+}
+
+/* ------------------------------------------------------------------
    Boîtier 3D — géométrie
    Proportions réelles d'un boîtier DVD : 135 × 190 × 14 mm.
    Une seule variable --box-w pilote toute la mise à l'échelle.
@@ -448,6 +524,35 @@ body {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* Pictogrammes : tracé complet d'emblée, sans animation de dessin. */
+  .draw-in > * {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  /* FAQ : on échange les faces sans rotation 3D. Le mouvement de bascule
+     est précisément ce que `prefers-reduced-motion` demande d'éviter. */
+  .flip-card,
+  .flip-card.is-flipped {
+    transform: none !important;
+  }
+
+  .flip-card .flip-back {
+    transform: none !important;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .flip-card.is-flipped .flip-face:first-child {
+    opacity: 0;
+  }
+
+  .flip-card.is-flipped .flip-back {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   /* Scène de livraison : le camion se fige au milieu de la route (sans quoi

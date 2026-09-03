@@ -16,7 +16,6 @@ export function otherLang(lang: Lang): Lang {
 
 /** Ancres partagées entre le header, le footer et les sections. */
 export const ANCHORS = {
-  problem: "probleme",
   how: "how-it-works",
   faq: "faq",
   founding: "founding",
@@ -100,7 +99,7 @@ function resolveSiteUrl(): string {
 
   return process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
-    : "https://dematgames.gg";
+    : "https://dematgames.com";
 }
 
 /**
@@ -113,4 +112,4 @@ function resolveSiteUrl(): string {
  */
 export const SITE_URL = resolveSiteUrl();
 
-export const CONTACT_EMAIL = "hello@dematgames.gg";
+export const CONTACT_EMAIL = "hello@dematgames.com";

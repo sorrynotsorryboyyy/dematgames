@@ -1,8 +1,11 @@
+import { Logo } from "@/components/layout/Logo";
+import { brandAssets } from "@/lib/brand";
 import type { Content, Lang } from "@/content/types";
 import { ANCHORS, CONTACT_EMAIL, path } from "@/lib/i18n";
 
 export function Footer({ t, lang }: { t: Content; lang: Lang }) {
   const year = new Date().getFullYear();
+  const brand = brandAssets();
 
   // Ancres absolues : un `#how-it-works` nu ne mène nulle part depuis la
   // boutique ou le panier, où ces sections n'existent pas.
@@ -18,9 +21,7 @@ export function Footer({ t, lang }: { t: Content; lang: Lang }) {
       <div className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 md:py-20 lg:px-12">
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <p className="font-display text-xl font-extrabold tracking-tight text-chalk">
-              dematgames<span className="text-ember">.gg</span>
-            </p>
+            <Logo href={`/${lang}`} assets={brand} />
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-smoke">
               {t.footer.tagline}
             </p>
@@ -65,7 +66,7 @@ export function Footer({ t, lang }: { t: Content; lang: Lang }) {
             {t.footer.signature}
           </p>
           <p className="font-mono text-[0.7rem] tracking-[0.14em] text-smoke/70 uppercase">
-            © {year} dematgames.gg · {t.footer.rights}
+            © {year} dematgames.com · {t.footer.rights}
           </p>
         </div>
       </div>

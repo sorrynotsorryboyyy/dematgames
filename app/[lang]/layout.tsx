@@ -61,7 +61,7 @@ export async function generateMetadata({
     title: t.meta.title,
     description: t.meta.description,
     keywords: t.meta.keywords,
-    applicationName: "dematgames.gg",
+    applicationName: "dematgames.com",
     alternates: {
       canonical: `/${lang}`,
       languages: {
@@ -72,7 +72,7 @@ export async function generateMetadata({
     },
     openGraph: {
       type: "website",
-      siteName: "dematgames.gg",
+      siteName: "dematgames.com",
       locale: lang === "fr" ? "fr_FR" : "en_US",
       url: `/${lang}`,
       title: t.meta.title,

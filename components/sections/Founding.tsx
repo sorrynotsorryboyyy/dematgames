@@ -50,21 +50,6 @@ export function Founding({ t }: { t: Content }) {
                 </p>
               </Reveal>
 
-              {/* 20 emplacements, tous ouverts. Pas de faux compteur de rareté :
-                  aucune place n'est présentée comme déjà prise. */}
-              <Reveal delay={3}>
-                <div
-                  className="mt-10 flex flex-wrap gap-1.5"
-                  aria-hidden="true"
-                >
-                  {Array.from({ length: 20 }).map((_, i) => (
-                    <span
-                      key={i}
-                      className="block h-6 w-2.5 rounded-sm border border-ember/35 bg-[var(--color-ember-soft)]"
-                    />
-                  ))}
-                </div>
-              </Reveal>
             </div>
 
             <Reveal delay={2}>

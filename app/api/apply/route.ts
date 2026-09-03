@@ -131,8 +131,8 @@ export async function POST(request: Request) {
   // 1) Email de notification (Resend) :
   //    import { Resend } from "resend";
   //    await new Resend(process.env.RESEND_API_KEY).emails.send({
-  //      from: "site@dematgames.gg",
-  //      to: "hello@dematgames.gg",
+  //      from: "site@dematgames.com",
+  //      to: "hello@dematgames.com",
   //      subject: `Nouveau jeu : ${application.game}`,
   //      text: JSON.stringify(application, null, 2),
   //    });

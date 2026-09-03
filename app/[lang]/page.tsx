@@ -4,9 +4,9 @@ import { Faq } from "@/components/sections/Faq";
 import { Founding } from "@/components/sections/Founding";
 import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
-import { Problem } from "@/components/sections/Problem";
 import { WhyNow } from "@/components/sections/WhyNow";
 import { isLang, type Lang } from "@/content/types";
+import { brandAssets } from "@/lib/brand";
 import { getContent, SITE_URL } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
@@ -28,7 +28,7 @@ export default async function LandingPage({
       {
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
-        name: "dematgames.gg",
+        name: "dematgames.com",
         url: SITE_URL,
         description: t.meta.description,
         slogan: t.footer.signature,
@@ -37,7 +37,7 @@ export default async function LandingPage({
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
         url: SITE_URL,
-        name: "dematgames.gg",
+        name: "dematgames.com",
         description: t.meta.description,
         inLanguage: lang,
         publisher: { "@id": `${SITE_URL}/#organization` },
@@ -61,11 +61,10 @@ export default async function LandingPage({
         {t.nav.skipToContent}
       </a>
 
-      <Header lang={lang} t={t} />
+      <Header lang={lang} t={t} brand={brandAssets()} />
 
       <main id="main">
         <Hero t={t} lang={lang} />
-        <Problem t={t} />
         <HowItWorks t={t} />
         <WhyNow t={t} />
         <Founding t={t} />

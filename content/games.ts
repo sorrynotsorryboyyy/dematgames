@@ -6,7 +6,7 @@ import type { Lang } from "./types";
  *
  * Les cinq jeux sont FICTIFS — ce sont ceux déjà inventés pour l'étagère de
  * la landing (components/box/BoxShelf.tsx). Utiliser de vrais titres indés
- * reviendrait à afficher des produits que dematgames.gg ne distribue pas,
+ * reviendrait à afficher des produits que dematgames.com ne distribue pas,
  * et à usurper l'identité de studios réels.
  *
  * Les teintes (`hue`) alimentent la jaquette générée par GameBox : chaque
