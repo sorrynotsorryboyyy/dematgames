@@ -1,4 +1,4 @@
-import { readJson, requireAdmin, slugify, str } from "@/lib/api-admin";
+import { readJson, requireAdmin, slugify, str, withAdminErrors } from "@/lib/api-admin";
 import { COLLECTIONS, type CategoryDoc } from "@/lib/schema";
 import { LANGS } from "@/content/types";
 import { NextResponse } from "next/server";
@@ -34,22 +34,31 @@ function toCategory(id: string, d: Record<string, unknown>): CategoryDoc {
   };
 }
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
 
-  const snapshot = await guard
-    .db!.collection(COLLECTIONS.categories)
-    .orderBy("order", "asc")
-    .get();
+  let snapshot;
+  try {
+    snapshot = await guard
+      .db!.collection(COLLECTIONS.categories)
+      .orderBy("order", "asc")
+      .get();
+  } catch (e) {
+    // Journalisé pour que les logs Vercel montrent la cause réelle
+    // (règle Firestore, index manquant) plutôt qu'un échec silencieux.
+    console.warn("[admin/categories] orderBy a échoué, lecture simple :", e);
+    snapshot = await guard.db!.collection(COLLECTIONS.categories).get();
+  }
 
-  return NextResponse.json({
-    ok: true,
-    categories: snapshot.docs.map((d) => toCategory(d.id, d.data())),
-  });
+  const categories = snapshot.docs
+    .map((d) => toCategory(d.id, d.data()))
+    .sort((a, b) => a.order - b.order);
+
+  return NextResponse.json({ ok: true, categories });
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
   const db = guard.db!;
@@ -107,7 +116,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true, id: created.id });
 }
 
-export async function DELETE(request: Request) {
+async function handleDELETE(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
   const db = guard.db!;
@@ -134,3 +143,9 @@ export async function DELETE(request: Request) {
 
   return NextResponse.json({ ok: true, orphaned: posts.size });
 }
+
+// Les handlers sont enveloppés : une exception devient une réponse JSON
+// exploitable au lieu d'un 500 opaque.
+export const GET = withAdminErrors(handleGET);
+export const POST = withAdminErrors(handlePOST);
+export const DELETE = withAdminErrors(handleDELETE);

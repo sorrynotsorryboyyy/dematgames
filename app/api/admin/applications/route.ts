@@ -1,4 +1,4 @@
-import { readJson, requireAdmin, str } from "@/lib/api-admin";
+import { readJson, requireAdmin, str, withAdminErrors } from "@/lib/api-admin";
 import {
   APPLICATION_STATUSES,
   COLLECTIONS,
@@ -26,15 +26,26 @@ function millis(value: unknown): number {
   return 0;
 }
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
 
-  const snapshot = await guard
-    .db!.collection(COLLECTIONS.applications)
-    .orderBy("createdAt", "desc")
-    .limit(200)
-    .get();
+  let snapshot;
+  try {
+    snapshot = await guard
+      .db!.collection(COLLECTIONS.applications)
+      .orderBy("createdAt", "desc")
+      .limit(200)
+      .get();
+  } catch (e) {
+    // Journalisé pour que les logs Vercel montrent la cause réelle
+    // (règle Firestore, index manquant) plutôt qu'un échec silencieux.
+    console.warn("[admin/applications] orderBy a échoué, lecture simple :", e);
+    snapshot = await guard
+      .db!.collection(COLLECTIONS.applications)
+      .limit(200)
+      .get();
+  }
 
   const applications: ApplicationDoc[] = snapshot.docs.map((doc) => {
     const d = doc.data();
@@ -55,11 +66,12 @@ export async function GET(request: Request) {
     };
   });
 
+  applications.sort((a, b) => b.createdAt - a.createdAt);
   return NextResponse.json({ ok: true, applications });
 }
 
 /** Met à jour le statut ou les notes internes d'une candidature. */
-export async function PATCH(request: Request) {
+async function handlePATCH(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
 
@@ -94,3 +106,8 @@ export async function PATCH(request: Request) {
   await guard.db!.collection(COLLECTIONS.applications).doc(id).update(update);
   return NextResponse.json({ ok: true });
 }
+
+// Les handlers sont enveloppés : une exception devient une réponse JSON
+// exploitable au lieu d'un 500 opaque.
+export const GET = withAdminErrors(handleGET);
+export const PATCH = withAdminErrors(handlePATCH);

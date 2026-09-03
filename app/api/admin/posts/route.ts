@@ -1,4 +1,4 @@
-import { readJson, requireAdmin, slugify, str } from "@/lib/api-admin";
+import { readJson, requireAdmin, slugify, str, withAdminErrors } from "@/lib/api-admin";
 import {
   COLLECTIONS,
   POST_STATUSES,
@@ -68,20 +68,27 @@ function toPost(id: string, d: Record<string, unknown>): PostDoc {
   };
 }
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
 
-  const snapshot = await guard
-    .db!.collection(COLLECTIONS.posts)
-    .orderBy("updatedAt", "desc")
-    .limit(200)
-    .get();
+  let snapshot;
+  try {
+    snapshot = await guard
+      .db!.collection(COLLECTIONS.posts)
+      .orderBy("updatedAt", "desc")
+      .limit(200)
+      .get();
+  } catch {
+    // Collection vide ou champ absent : lecture simple, tri en mémoire.
+    snapshot = await guard.db!.collection(COLLECTIONS.posts).limit(200).get();
+  }
 
-  return NextResponse.json({
-    ok: true,
-    posts: snapshot.docs.map((doc) => toPost(doc.id, doc.data())),
-  });
+  const posts = snapshot.docs
+    .map((doc) => toPost(doc.id, doc.data()))
+    .sort((a, b) => b.updatedAt - a.updatedAt);
+
+  return NextResponse.json({ ok: true, posts });
 }
 
 interface PostInput {
@@ -97,7 +104,7 @@ interface PostInput {
 }
 
 /** Crée ou met à jour un article. */
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
   const db = guard.db!;
@@ -213,7 +220,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true, id: created.id, slug });
 }
 
-export async function DELETE(request: Request) {
+async function handleDELETE(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
 
@@ -228,3 +235,9 @@ export async function DELETE(request: Request) {
   await guard.db!.collection(COLLECTIONS.posts).doc(id).delete();
   return NextResponse.json({ ok: true });
 }
+
+// Les handlers sont enveloppés : une exception devient une réponse JSON
+// exploitable au lieu d'un 500 opaque.
+export const GET = withAdminErrors(handleGET);
+export const POST = withAdminErrors(handlePOST);
+export const DELETE = withAdminErrors(handleDELETE);

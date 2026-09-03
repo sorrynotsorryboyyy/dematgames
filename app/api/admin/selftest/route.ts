@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/lib/api-admin";
+import { requireAdmin, withAdminErrors } from "@/lib/api-admin";
 import { COLLECTIONS } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
@@ -12,7 +12,7 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
   const db = guard.db!;
@@ -34,3 +34,7 @@ export async function GET(request: Request) {
     },
   });
 }
+
+// Les handlers sont enveloppés : une exception devient une réponse JSON
+// exploitable au lieu d'un 500 opaque.
+export const GET = withAdminErrors(handleGET);

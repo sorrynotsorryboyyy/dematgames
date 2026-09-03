@@ -79,6 +79,7 @@ export interface Content {
 
   nav: {
     shop: string;
+    blog: string;
     account: string;
     cart: string;
     login: string;
@@ -263,6 +264,10 @@ export interface Content {
     /** « En partenariat avec X » sur la fiche d'un article sponsorisé. */
     sponsoredBy: string;
     backToBlog: string;
+    /** Section « derniers articles » sur la page d'accueil. */
+    latestTitle: string;
+    latestIntro: string;
+    seeAll: string;
     readMore: string;
   };
 

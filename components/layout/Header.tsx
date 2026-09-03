@@ -54,6 +54,7 @@ export function Header({
 
   const links = [
     { href: path("shop", lang), label: t.nav.shop },
+    { href: path("blog", lang), label: t.nav.blog },
     { href: anchor(ANCHORS.how), label: t.nav.howItWorks },
     { href: anchor(ANCHORS.faq), label: t.nav.faq },
   ];

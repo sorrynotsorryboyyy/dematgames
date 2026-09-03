@@ -31,6 +31,7 @@ export const fr: Content = {
 
   nav: {
     shop: "Boutique",
+    blog: "Blog",
     account: "Mon compte",
     cart: "Panier",
     login: "Connexion",
@@ -297,6 +298,10 @@ export const fr: Content = {
     sponsored: "Sponsorisé",
     sponsoredBy: "En partenariat avec",
     backToBlog: "Retour au blog",
+    latestTitle: "Derniers articles",
+    latestIntro:
+      "Coulisses d'atelier, retours de studios, et ce qu'on apprend en fabriquant des objets.",
+    seeAll: "Tous les articles →",
     readMore: "Lire l'article",
   },
 

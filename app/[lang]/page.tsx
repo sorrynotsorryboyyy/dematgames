@@ -4,9 +4,11 @@ import { Faq } from "@/components/sections/Faq";
 import { Founding } from "@/components/sections/Founding";
 import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
+import { LatestPosts } from "@/components/sections/LatestPosts";
 import { WhyNow } from "@/components/sections/WhyNow";
 import { isLang, type Lang } from "@/content/types";
 import { brandAssets } from "@/lib/brand";
+import { listCategories, listPosts } from "@/lib/blog";
 import { getContent, SITE_URL } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
@@ -67,6 +69,12 @@ export default async function LandingPage({
         <Hero t={t} lang={lang} />
         <HowItWorks t={t} />
         <WhyNow t={t} />
+        <LatestPosts
+          lang={lang}
+          t={t}
+          posts={await listPosts(lang)}
+          categories={await listCategories()}
+        />
         <Founding t={t} />
         <Faq t={t} />
       </main>

@@ -1,4 +1,4 @@
-import { requireAdmin, readJson, str } from "@/lib/api-admin";
+import { requireAdmin, readJson, str, withAdminErrors } from "@/lib/api-admin";
 import { COLLECTIONS, isRole, type Role, type UserDoc } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
@@ -23,16 +23,27 @@ function millis(value: unknown): number {
   return 0;
 }
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
   const db = guard.db!;
 
-  const snapshot = await db
-    .collection(COLLECTIONS.users)
-    .orderBy("memberNumber", "asc")
-    .limit(200)
-    .get();
+  // `orderBy` échoue si la collection est vide ou si les documents n'ont
+  // pas le champ trié — on retombe alors sur une lecture simple, triée en
+  // mémoire. Une collection vide doit ouvrir l'admin, pas le casser.
+  let snapshot;
+  try {
+    snapshot = await db
+      .collection(COLLECTIONS.users)
+      .orderBy("memberNumber", "asc")
+      .limit(200)
+      .get();
+  } catch (e) {
+    // Journalisé pour que les logs Vercel montrent la cause réelle
+    // (règle Firestore, index manquant) plutôt qu'un échec silencieux.
+    console.warn("[admin/users] orderBy a échoué, lecture simple :", e);
+    snapshot = await db.collection(COLLECTIONS.users).limit(200).get();
+  }
 
   const users: UserDoc[] = snapshot.docs.map((doc) => {
     const d = doc.data();
@@ -50,11 +61,12 @@ export async function GET(request: Request) {
     };
   });
 
+  users.sort((a, b) => a.memberNumber - b.memberNumber);
   return NextResponse.json({ ok: true, users });
 }
 
 /** Change le rôle d'un utilisateur. */
-export async function PATCH(request: Request) {
+async function handlePATCH(request: Request) {
   const guard = await requireAdmin(request);
   if (guard.error) return guard.error;
   const db = guard.db!;
@@ -94,3 +106,8 @@ export async function PATCH(request: Request) {
   await ref.update({ role: role as Role });
   return NextResponse.json({ ok: true });
 }
+
+// Les handlers sont enveloppés : une exception devient une réponse JSON
+// exploitable au lieu d'un 500 opaque.
+export const GET = withAdminErrors(handleGET);
+export const PATCH = withAdminErrors(handlePATCH);

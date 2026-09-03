@@ -11,6 +11,7 @@ export function Footer({ t, lang }: { t: Content; lang: Lang }) {
   // boutique ou le panier, où ces sections n'existent pas.
   const links = [
     { href: path("shop", lang), label: t.nav.shop },
+    { href: path("blog", lang), label: t.nav.blog },
     { href: `/${lang}#${ANCHORS.how}`, label: t.nav.howItWorks },
     { href: `/${lang}#${ANCHORS.faq}`, label: t.nav.faq },
     { href: `mailto:${CONTACT_EMAIL}`, label: t.nav.contact },

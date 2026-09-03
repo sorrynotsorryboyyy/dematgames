@@ -60,6 +60,33 @@ export async function requireAdmin(request: Request): Promise<AdminGuard> {
   return { user, db };
 }
 
+/**
+ * Enveloppe un handler admin pour qu'une exception devienne une réponse JSON
+ * diagnosticable plutôt qu'un 500 opaque.
+ *
+ * Sans cela, une requête Firestore qui échoue (index manquant, règle,
+ * collection absente) produit un 500 vide côté navigateur : impossible de
+ * savoir ce qui a cassé sans fouiller les logs de l'hébergeur.
+ */
+export function withAdminErrors(
+  handler: (request: Request) => Promise<NextResponse>,
+): (request: Request) => Promise<NextResponse> {
+  return async (request) => {
+    try {
+      return await handler(request);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.error("[admin] erreur non gérée :", message, e);
+      return NextResponse.json(
+        // Le message n'est renvoyé qu'aux admins : la route n'est atteinte
+        // qu'après vérification du jeton.
+        { ok: false, error: "server_error", message },
+        { status: 500 },
+      );
+    }
+  };
+}
+
 /** Lit et valide le corps JSON d'une requête. */
 export async function readJson<T>(
   request: Request,

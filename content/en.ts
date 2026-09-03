@@ -27,6 +27,7 @@ export const en: Content = {
 
   nav: {
     shop: "Shop",
+    blog: "Blog",
     account: "Account",
     cart: "Cart",
     login: "Sign in",
@@ -290,6 +291,10 @@ export const en: Content = {
     sponsored: "Sponsored",
     sponsoredBy: "In partnership with",
     backToBlog: "Back to the blog",
+    latestTitle: "Latest articles",
+    latestIntro:
+      "Workshop notes, studio stories, and what we learn making things you can hold.",
+    seeAll: "All articles →",
     readMore: "Read the article",
   },
 
