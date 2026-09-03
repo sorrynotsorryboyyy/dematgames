@@ -1,3 +1,4 @@
+import { en } from "@/content/en";
 import { fr } from "@/content/fr";
 import {
   hasErrors,
@@ -81,9 +82,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  // Les options de plateforme sont identiques dans les deux langues ;
-  // fr fait donc référence pour la validation serveur.
-  const errors = validateApplication(body, fr.founding.form.platform.options);
+  // Les options viennent du contenu FR. Elles diffèrent du contenu EN, d'où
+  // la validation contre les DEUX langues : un visiteur anglophone envoie
+  // « In development », un francophone « En développement », et les deux
+  // doivent être acceptés.
+  const q = fr.founding.form.qualification;
+  const qEn = en.founding.form.qualification;
+  const errors = validateApplication(
+    body,
+    [...fr.founding.form.platform.options, ...en.founding.form.platform.options],
+    {
+      stage: [...q.stage.options, ...qEn.stage.options],
+      volume: [...q.volume.options, ...qEn.volume.options],
+      edition: [...q.edition.options, ...qEn.edition.options],
+      team: [...q.team.options, ...qEn.team.options],
+    },
+  );
   if (hasErrors(errors)) {
     return NextResponse.json(
       { ok: false, error: "validation", fields: Object.keys(errors) },
@@ -98,6 +112,11 @@ export async function POST(request: Request) {
     link: String(body.link).trim(),
     platform: String(body.platform).trim(),
     message: String(body.message ?? "").trim(),
+    // Qualification : optionnelle, d'où les chaînes vides possibles.
+    stage: String(body.stage ?? "").trim(),
+    volume: String(body.volume ?? "").trim(),
+    edition: String(body.edition ?? "").trim(),
+    team: String(body.team ?? "").trim(),
     receivedAt: new Date().toISOString(),
   };
 

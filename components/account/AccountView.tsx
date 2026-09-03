@@ -16,7 +16,7 @@ import { useState } from "react";
 type Tab = "profile" | "orders" | "games";
 
 export function AccountView({ lang, t }: { lang: Lang; t: Content }) {
-  const { user, ready, signOut } = useSession();
+  const { user, ready, signOut, chooseAvatar } = useSession();
   const [tab, setTab] = useState<Tab>("profile");
 
   // Le temps de lire le localStorage : ni « connecté » ni « invité ».
@@ -56,24 +56,30 @@ export function AccountView({ lang, t }: { lang: Lang; t: Content }) {
     <>
       <h1 className="display display-lg text-chalk">{t.account.title}</h1>
       <div className="mt-4 flex items-center gap-3">
-        {/* Photo Google. <img> plutôt que next/image : l'URL vient d'un
-            domaine externe variable (googleusercontent), et configurer
-            remotePatterns pour un avatar de 40 px n'en vaut pas le coût. */}
-        {user.photoURL && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={user.photoURL}
-            alt=""
-            width={40}
-            height={40}
-            className="size-10 rounded-full border border-slate"
-            referrerPolicy="no-referrer"
-          />
-        )}
-        <p className="text-[0.95rem] text-smoke">
-          {t.account.signedInAs}{" "}
-          <span className="font-medium text-chalk">{user.name}</span>
-        </p>
+        {/* <img> plutôt que next/image : l'avatar de membre est un SVG servi
+            par notre propre route, et la photo Google vient d'un domaine
+            externe variable — configurer remotePatterns pour 44 px n'en vaut
+            pas le coût. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={user.avatar}
+          alt=""
+          width={44}
+          height={44}
+          className="size-11 rounded-full border border-slate bg-carbon"
+          referrerPolicy="no-referrer"
+        />
+        <div>
+          <p className="text-[0.95rem] text-smoke">
+            {t.account.signedInAs}{" "}
+            <span className="font-medium text-chalk">{user.name}</span>
+          </p>
+          {user.memberNumber > 0 && (
+            <p className="numeric text-[0.8rem] text-ember">
+              {t.account.memberSince} #{user.memberNumber}
+            </p>
+          )}
+        </div>
       </div>
 
       <div
@@ -118,6 +124,48 @@ export function AccountView({ lang, t }: { lang: Lang; t: Content }) {
                 <dd className="mt-1 text-[1.05rem] text-chalk">{user.email}</dd>
               </div>
             </dl>
+            {/* Choix d'avatar. Proposé seulement si Google a fourni une
+                photo : sans elle, l'option n'aurait aucun effet. */}
+            {user.googlePhotoURL && (
+              <div className="mt-8 border-t border-slate pt-6">
+                <p className="text-[0.85rem] font-medium text-chalk">
+                  {t.account.avatarLabel}
+                </p>
+                <div className="mt-3 flex gap-2">
+                  {(["member", "google"] as const).map((source) => (
+                    <button
+                      key={source}
+                      type="button"
+                      onClick={() => chooseAvatar(source)}
+                      aria-pressed={user.avatarSource === source}
+                      className={`flex items-center gap-2.5 rounded-lg border px-3 py-2 text-[0.85rem] transition-all ${
+                        user.avatarSource === source
+                          ? "border-ember bg-[var(--color-ember-soft)] text-chalk"
+                          : "border-slate bg-ash text-smoke hover:border-smoke"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={
+                          source === "google"
+                            ? user.googlePhotoURL!
+                            : `/api/avatar/${user.memberNumber}`
+                        }
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="size-6 rounded-full"
+                        referrerPolicy="no-referrer"
+                      />
+                      {source === "member"
+                        ? t.account.avatarMember
+                        : t.account.avatarGoogle}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <Button
               type="button"
               variant="ghost"

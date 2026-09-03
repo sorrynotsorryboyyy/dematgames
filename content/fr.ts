@@ -86,35 +86,45 @@ export const fr: Content = {
   },
 
   how: {
-    title: "Du fichier à la boîte.",
+    title: "Du premier message à la boîte.",
     intro:
-      "Quatre étapes entre votre exécutable et une boîte posée sur l'étagère d'un joueur.",
+      "Six étapes entre votre premier message et une boîte posée sur l'étagère d'un joueur.",
     steps: [
       {
         n: "01",
-        title: "Envoyez votre jeu",
-        body: "Vous nous transmettez le build final. Nous vérifions qu'il tourne et qu'il tient sur le support.",
+        title: "Contact",
+        body: "Vous nous écrivez avec votre jeu et ce que vous avez en tête. Nous répondons sous quelques jours, sans engagement.",
       },
       {
         n: "02",
-        title: "Composez l'édition",
-        body: "Jaquette, livret, disque, goodies : vous choisissez le format et fournissez vos visuels.",
+        title: "Définition du besoin",
+        body: "On cadre ensemble : format d'édition, volume, calendrier. C'est le moment où l'on vous dit ce qui est faisable et à quel coût.",
       },
       {
         n: "03",
-        title: "Nous fabriquons",
-        body: "Chaque exemplaire est produit à la commande. Aucun stock dormant, aucune avance de votre part.",
+        title: "Préparation",
+        body: "Build du jeu, jaquette, livret, sérigraphie du disque : nous préparons les fichiers d'impression à partir de vos visuels.",
       },
       {
         n: "04",
-        title: "Le joueur reçoit",
-        body: "Nous emballons et expédions. Votre joueur déballe un objet, pas un code de téléchargement.",
+        title: "Pressage à la demande",
+        body: "Chaque exemplaire est produit quand il est commandé. Aucun stock dormant, aucune trésorerie immobilisée.",
+      },
+      {
+        n: "05",
+        title: "Expédition",
+        body: "Le colis part sous 1 à 4 jours ouvrés, emballé et suivi.",
+        note: "Selon le volume commandé et la destination.",
+      },
+      {
+        n: "06",
+        title: "Entre les mains du joueur",
+        body: "Il déballe un objet, pas un code de téléchargement. Et il le garde.",
       },
     ],
-    pipeline: {
-      labels: ["Votre build", "Disque pressé", "Colis expédié", "Entre ses mains"],
-      caption: "Le fichier devient un objet.",
-    },
+    navPrev: "Étape précédente",
+    navNext: "Étape suivante",
+    progress: "Étape {i} sur {n}",
   },
 
   whyNow: {
@@ -171,6 +181,38 @@ export const fr: Content = {
           "Parlez-nous de votre jeu, de votre communauté, de l'édition que vous imaginez…",
         error: "Message trop long (2000 caractères maximum).",
       },
+      qualification: {
+        legend: "Pour cadrer votre demande",
+        stage: {
+          label: "Où en est votre jeu ?",
+          options: [
+            "En développement",
+            "En accès anticipé",
+            "Sortie imminente",
+            "Déjà sorti",
+          ],
+        },
+        volume: {
+          label: "Combien d'exemplaires envisagez-vous ?",
+          options: [
+            "Environ 50",
+            "50 à 100",
+            "100 à 500",
+            "Plus de 500",
+            "Je ne sais pas encore",
+          ],
+        },
+        edition: {
+          label: "Quelle édition vous intéresse ?",
+          options: ["Standard", "Deluxe", "Collector", "À définir ensemble"],
+        },
+        team: {
+          label: "Combien êtes-vous dans l'équipe ?",
+          options: ["Solo", "2 à 5", "6 à 15", "Plus de 15"],
+        },
+      },
+      sectionGame: "Votre jeu",
+      sectionYou: "Vous",
       submit: "Proposer mon jeu",
       submitting: "Envoi en cours…",
       required: "obligatoire",
@@ -232,6 +274,10 @@ export const fr: Content = {
     tabs: { profile: "Profil", orders: "Commandes", games: "Mes jeux" },
     profileName: "Nom",
     profileEmail: "Email",
+    memberSince: "Membre",
+    avatarLabel: "Photo de profil",
+    avatarMember: "Mon badge",
+    avatarGoogle: "Photo Google",
     noOrders:
       "Aucune commande pour l'instant. La boutique ouvrira avec les premiers jeux produits.",
     noGames:

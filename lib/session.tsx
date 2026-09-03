@@ -2,7 +2,6 @@
 
 import {
   getFirebaseAuth,
-  getDb,
   googleProvider,
   isFirebaseConfigured,
 } from "@/lib/firebase";
@@ -10,9 +9,9 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   signOut as fbSignOut,
-  type User,
 } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import type { AvatarSource, Role } from "@/lib/schema";
+import { avatarUrl, ensureUserDoc, setAvatarSource } from "@/lib/users";
 import {
   createContext,
   useCallback,
@@ -43,9 +42,15 @@ export interface SessionUser {
   uid: string;
   name: string;
   email: string;
-  photoURL: string | null;
-  /** Rôle applicatif, lu depuis Firestore. Prépare le futur /admin. */
-  role: "client" | "dev" | "admin";
+  /** Photo Google brute. `avatar` est ce qu'il faut afficher. */
+  googlePhotoURL: string | null;
+  /** URL de l'avatar à afficher, selon la préférence de l'utilisateur. */
+  avatar: string;
+  /** Numéro d'inscription, définitif. 0 si Firestore n'a pas répondu. */
+  memberNumber: number;
+  avatarSource: AvatarSource;
+  /** Rôle applicatif, lu depuis Firestore — jamais depuis le jeton. */
+  role: Role;
 }
 
 interface SessionValue {
@@ -58,59 +63,16 @@ interface SessionValue {
   error: "popup-closed" | "network" | "unknown" | null;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  /** Bascule entre l'avatar de membre et la photo Google. */
+  chooseAvatar: (source: AvatarSource) => Promise<void>;
+  /**
+   * Jeton d'identité courant, pour authentifier les appels aux routes API.
+   * Rafraîchi automatiquement par le SDK — ne jamais le mettre en cache.
+   */
+  getToken: () => Promise<string | null>;
 }
 
 const SessionContext = createContext<SessionValue | null>(null);
-
-/**
- * Crée le document utilisateur à la première connexion, ou le met à jour.
- *
- * Le rôle n'est JAMAIS écrit depuis le client au-delà de la création : un
- * utilisateur pourrait sinon s'attribuer `admin` en rejouant la requête. Les
- * règles Firestore doivent interdire toute modification du champ `role`
- * depuis le navigateur (voir README).
- */
-async function syncUserDoc(fbUser: User): Promise<SessionUser["role"]> {
-  const db = getDb();
-  if (!db) return "client";
-
-  const ref = doc(db, "users", fbUser.uid);
-
-  try {
-    const snapshot = await getDoc(ref);
-
-    if (!snapshot.exists()) {
-      await setDoc(ref, {
-        email: fbUser.email ?? "",
-        name: fbUser.displayName ?? "",
-        photoURL: fbUser.photoURL ?? null,
-        role: "client",
-        createdAt: serverTimestamp(),
-        lastSeenAt: serverTimestamp(),
-      });
-      return "client";
-    }
-
-    // On rafraîchit le profil (le nom ou l'avatar Google peuvent changer)
-    // sans jamais toucher au rôle.
-    await setDoc(
-      ref,
-      {
-        name: fbUser.displayName ?? "",
-        photoURL: fbUser.photoURL ?? null,
-        lastSeenAt: serverTimestamp(),
-      },
-      { merge: true },
-    );
-
-    const role = snapshot.data()?.role;
-    return role === "admin" || role === "dev" ? role : "client";
-  } catch {
-    // Firestore indisponible ou règles restrictives : on n'empêche pas la
-    // connexion pour autant, l'utilisateur est simplement « client ».
-    return "client";
-  }
-}
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
@@ -130,13 +92,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const role = await syncUserDoc(fbUser);
+      // ensureUserDoc crée le document au premier passage (avec attribution
+      // atomique du numéro de membre) ou rafraîchit le profil existant.
+      const profile = await ensureUserDoc(fbUser);
       setUser({
-        uid: fbUser.uid,
-        name: fbUser.displayName ?? fbUser.email?.split("@")[0] ?? "",
-        email: fbUser.email ?? "",
-        photoURL: fbUser.photoURL,
-        role,
+        uid: profile.uid,
+        name: profile.name || profile.email.split("@")[0] || "",
+        email: profile.email,
+        googlePhotoURL: profile.googlePhotoURL,
+        avatar: avatarUrl(profile),
+        memberNumber: profile.memberNumber,
+        avatarSource: profile.avatarSource,
+        role: profile.role,
       });
       setReady(true);
     });
@@ -173,6 +140,33 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     await fbSignOut(auth);
   }, []);
 
+  const chooseAvatar = useCallback(
+    async (source: AvatarSource) => {
+      if (!user) return;
+      await setAvatarSource(user.uid, source);
+      // Mise à jour optimiste : l'écriture Firestore est déjà partie, et
+      // attendre onAuthStateChanged (qui ne se déclenche pas ici) laisserait
+      // l'interface figée.
+      setUser((current) =>
+        current
+          ? {
+              ...current,
+              avatarSource: source,
+              avatar: avatarUrl({ ...current, avatarSource: source }),
+            }
+          : current,
+      );
+    },
+    [user],
+  );
+
+  const getToken = useCallback(async () => {
+    const auth = getFirebaseAuth();
+    // getIdToken rafraîchit le jeton s'il est expiré : on ne le met jamais
+    // en cache côté appelant.
+    return auth?.currentUser ? auth.currentUser.getIdToken() : null;
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -181,8 +175,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       error,
       signInWithGoogle,
       signOut,
+      chooseAvatar,
+      getToken,
     }),
-    [user, ready, error, signInWithGoogle, signOut],
+    [user, ready, error, signInWithGoogle, signOut, chooseAvatar, getToken],
   );
 
   return (

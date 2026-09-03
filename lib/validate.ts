@@ -12,13 +12,43 @@ export interface ApplicationInput {
   link: string;
   platform: string;
   message: string;
+  /**
+   * Réponses de qualification, toutes OPTIONNELLES.
+   *
+   * Un studio qui découvre le service n'a souvent aucune idée du volume :
+   * les rendre obligatoires ferait abandonner au moment précis où l'on veut
+   * le contraire. Mais si une valeur est fournie, elle doit appartenir à la
+   * liste des options — sinon un client pourrait injecter n'importe quoi.
+   */
+  stage?: string;
+  volume?: string;
+  edition?: string;
+  team?: string;
   /** Champ piège : rempli = bot. */
   website?: string;
   /** Horodatage d'ouverture du formulaire (ms epoch), pour détecter les soumissions instantanées. */
   startedAt?: number;
 }
 
-export type FieldName = "name" | "email" | "game" | "link" | "platform" | "message";
+export type FieldName =
+  | "name"
+  | "email"
+  | "game"
+  | "link"
+  | "platform"
+  | "message"
+  | "stage"
+  | "volume"
+  | "edition"
+  | "team";
+
+/** Listes d'options autorisées pour les champs de qualification. */
+export interface AllowedChoices {
+  stage: readonly string[];
+  volume: readonly string[];
+  edition: readonly string[];
+  team: readonly string[];
+}
 
 export type Errors = Partial<Record<FieldName, true>>;
 
@@ -53,6 +83,7 @@ function isHttpUrl(value: string): boolean {
 export function validateApplication(
   input: Partial<ApplicationInput>,
   allowedPlatforms: readonly string[],
+  allowedChoices?: AllowedChoices,
 ): Errors {
   const errors: Errors = {};
   const name = (input.name ?? "").trim();
@@ -71,6 +102,16 @@ export function validateApplication(
   if (!platform || !allowedPlatforms.includes(platform)) errors.platform = true;
   // Message optionnel : seule sa longueur est contrainte.
   if (message.length > LIMITS.message) errors.message = true;
+
+  // Qualification : vide est valide, mais une valeur hors liste ne l'est pas.
+  if (allowedChoices) {
+    for (const field of ["stage", "volume", "edition", "team"] as const) {
+      const value = (input[field] ?? "").trim();
+      if (value && !allowedChoices[field].includes(value)) {
+        errors[field] = true;
+      }
+    }
+  }
 
   return errors;
 }

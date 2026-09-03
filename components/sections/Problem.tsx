@@ -1,6 +1,6 @@
-import { ProblemShelf } from "@/components/box/ProblemShelf";
 import { Reveal } from "@/components/ui/Reveal";
 import { Band, Section } from "@/components/ui/Section";
+import { TiltCard } from "@/components/ui/TiltCard";
 import type { Content } from "@/content/types";
 import { ANCHORS } from "@/lib/i18n";
 
@@ -23,10 +23,28 @@ export function Problem({ t }: { t: Content }) {
           </Reveal>
         </div>
 
-        {/* Les trois obstacles, rangés sur une étagère vide de jeux —
-            c'est le propos du titre juste au-dessus. */}
-        <ProblemShelf cards={t.problem.cards} />
-
+        {/* Grille de cartes. L'étagère en bois a été retirée : la métaphore
+            alourdissait la section sans rien ajouter au propos. */}
+        <ul className="mt-14 grid gap-5 md:mt-16 md:grid-cols-3">
+          {t.problem.cards.map((card, i) => (
+            <Reveal as="li" key={card.title} delay={(i + 1) as 1 | 2 | 3}>
+              <TiltCard className="card p-8 lg:p-9">
+                <span
+                  aria-hidden="true"
+                  className="numeric inline-flex size-8 items-center justify-center rounded-lg bg-[var(--color-ember-soft)] text-[0.8rem] font-semibold text-ember"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="display mt-5 text-xl text-chalk lg:text-[1.35rem]">
+                  {card.title}
+                </h3>
+                <p className="mt-3.5 text-[1.02rem] leading-[1.7] text-smoke">
+                  {card.body}
+                </p>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </ul>
       </Section>
 
       {/* Transition — la bascule du problème vers la solution. */}

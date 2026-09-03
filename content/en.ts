@@ -80,35 +80,45 @@ export const en: Content = {
   },
 
   how: {
-    title: "From build to box.",
+    title: "From first message to box.",
     intro:
-      "Four steps between your executable and a box sitting on a player's shelf.",
+      "Six steps between your first message and a box sitting on a player's shelf.",
     steps: [
       {
         n: "01",
-        title: "Send your build",
-        body: "You hand over the final build. We check that it runs and that it fits on the disc.",
+        title: "Get in touch",
+        body: "You write to us about your game and what you have in mind. We reply within a few days, no commitment.",
       },
       {
         n: "02",
-        title: "Design the edition",
-        body: "Cover, booklet, disc, extras: you pick the format and supply the artwork.",
+        title: "Scope the work",
+        body: "We work it out together: edition format, volume, timeline. This is where we tell you what's feasible and what it costs.",
       },
       {
         n: "03",
-        title: "We manufacture",
-        body: "Every copy is made to order. No dormant stock, nothing paid up front by you.",
+        title: "Preparation",
+        body: "Game build, cover, booklet, disc print: we prepare the production files from your artwork.",
       },
       {
         n: "04",
-        title: "The player unboxes",
-        body: "We pack and ship. Your player opens an object, not a download code.",
+        title: "Pressed on demand",
+        body: "Every copy is made when it's ordered. No dormant stock, no cash tied up.",
+      },
+      {
+        n: "05",
+        title: "Shipping",
+        body: "The parcel leaves within 1 to 4 working days, packed and tracked.",
+        note: "Depending on order volume and destination.",
+      },
+      {
+        n: "06",
+        title: "In the player's hands",
+        body: "They unbox an object, not a download code. And they keep it.",
       },
     ],
-    pipeline: {
-      labels: ["Your build", "Pressed disc", "Parcel shipped", "In their hands"],
-      caption: "The file becomes an object.",
-    },
+    navPrev: "Previous step",
+    navNext: "Next step",
+    progress: "Step {i} of {n}",
   },
 
   whyNow: {
@@ -165,6 +175,38 @@ export const en: Content = {
           "Tell us about your game, your community, the edition you have in mind…",
         error: "Message is too long (2000 characters maximum).",
       },
+      qualification: {
+        legend: "To scope your request",
+        stage: {
+          label: "Where is your game?",
+          options: [
+            "In development",
+            "In early access",
+            "Launching soon",
+            "Already released",
+          ],
+        },
+        volume: {
+          label: "How many copies are you thinking of?",
+          options: [
+            "Around 50",
+            "50 to 100",
+            "100 to 500",
+            "More than 500",
+            "I don't know yet",
+          ],
+        },
+        edition: {
+          label: "Which edition interests you?",
+          options: ["Standard", "Deluxe", "Collector", "Let's work it out"],
+        },
+        team: {
+          label: "How big is your team?",
+          options: ["Solo", "2 to 5", "6 to 15", "More than 15"],
+        },
+      },
+      sectionGame: "Your game",
+      sectionYou: "You",
       submit: "Submit my game",
       submitting: "Sending…",
       required: "required",
@@ -225,6 +267,10 @@ export const en: Content = {
     tabs: { profile: "Profile", orders: "Orders", games: "My games" },
     profileName: "Name",
     profileEmail: "Email",
+    memberSince: "Member",
+    avatarLabel: "Profile picture",
+    avatarMember: "My badge",
+    avatarGoogle: "Google photo",
     noOrders:
       "No orders yet. The shop will open with the first games we produce.",
     noGames:

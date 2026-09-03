@@ -1,0 +1,110 @@
+rules_version = '2';
+
+/**
+ * Règles de sécurité Firestore — dematgames.gg
+ *
+ * À déployer depuis la console Firebase (Firestore → Règles) ou via
+ * `firebase deploy --only firestore:rules`.
+ *
+ * PRINCIPE : le client ne peut jamais élever ses propres privilèges. Toute
+ * écriture sensible (rôle, publication d'article, statut de candidature)
+ * passe par une route serveur qui utilise firebase-admin et contourne ces
+ * règles après avoir vérifié le jeton.
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    /** Le rôle est lu depuis Firestore, jamais depuis le jeton. */
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ---------------------------------------------------------------
+    // Utilisateurs
+    // ---------------------------------------------------------------
+    match /users/{uid} {
+      // On lit son propre profil ; un admin lit tout le monde.
+      allow read: if isSelf(uid) || isAdmin();
+
+      // Création à l'inscription : le rôle est FORCÉ à 'client' et le
+      // numéro de membre doit être un entier positif. Sans cette
+      // contrainte, un utilisateur créerait son document avec role:'admin'.
+      allow create: if isSelf(uid)
+        && request.resource.data.role == 'client'
+        && request.resource.data.memberNumber is int
+        && request.resource.data.memberNumber > 0;
+
+      // Mise à jour : le rôle ET le numéro de membre sont immuables côté
+      // client. Seul le serveur (firebase-admin) peut les changer.
+      allow update: if isSelf(uid)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.memberNumber == resource.data.memberNumber;
+
+      // Personne ne supprime un compte depuis le navigateur : la
+      // suppression RGPD passera par une route serveur qui nettoie aussi
+      // les données liées.
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // Compteur de membres
+    // ---------------------------------------------------------------
+    match /counters/{name} {
+      // Lecture nécessaire à la transaction d'inscription.
+      allow read: if isSignedIn();
+      // Incrément d'exactement 1, et jamais de retour en arrière : c'est ce
+      // qui empêche de rejouer le compteur pour voler un numéro.
+      allow create: if isSignedIn() && request.resource.data.count == 1;
+      allow update: if isSignedIn()
+        && request.resource.data.count == resource.data.count + 1;
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // Blog — catégories
+    // ---------------------------------------------------------------
+    match /categories/{id} {
+      // Lecture publique : les pages du blog sont accessibles à tous.
+      allow read: if true;
+      // Toute écriture passe par le serveur.
+      allow write: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // Blog — articles
+    // ---------------------------------------------------------------
+    match /posts/{id} {
+      // Les brouillons ne sont lisibles que par un admin. Un article publié
+      // est public.
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow write: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // Candidatures « studios fondateurs »
+    // ---------------------------------------------------------------
+    match /applications/{id} {
+      // Contiennent des données personnelles : seul un admin les lit.
+      allow read: if isAdmin();
+      // L'écriture passe par /api/apply, qui valide et limite le débit.
+      allow write: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // Tout le reste est refusé par défaut.
+    // ---------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

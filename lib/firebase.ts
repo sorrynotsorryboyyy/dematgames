@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
+import type { Firestore } from "firebase/firestore";
 
 /**
  * Initialisation Firebase (côté client).
@@ -31,7 +31,7 @@ export const isFirebaseConfigured = Boolean(
 
 let app: FirebaseApp | null = null;
 let authInstance: Auth | null = null;
-let dbInstance: Firestore | null = null;
+let dbPromise: Promise<Firestore | null> | null = null;
 
 /**
  * Initialisation paresseuse et idempotente.
@@ -56,11 +56,30 @@ export function getFirebaseAuth(): Auth | null {
   return authInstance;
 }
 
-export function getDb(): Firestore | null {
-  const instance = ensureApp();
-  if (!instance) return null;
-  if (!dbInstance) dbInstance = getFirestore(instance);
-  return dbInstance;
+/**
+ * Firestore, chargé à la demande.
+ *
+ * L'import est DYNAMIQUE et c'est délibéré : `firebase/firestore` pèse près
+ * de 160 Ko gzip. Avec un import statique, il partait sur CHAQUE page — y
+ * compris la landing, qui n'interroge jamais la base — simplement parce que
+ * le header utilise `useSession`.
+ *
+ * Ici, il n'est téléchargé qu'au moment où l'on en a réellement besoin :
+ * à la connexion, pour créer ou lire le document utilisateur.
+ *
+ * La promesse est mémoïsée : les appels concurrents partagent le même
+ * chargement plutôt que d'en déclencher plusieurs.
+ */
+export function getDb(): Promise<Firestore | null> {
+  if (!dbPromise) {
+    dbPromise = (async () => {
+      const instance = ensureApp();
+      if (!instance) return null;
+      const { getFirestore } = await import("firebase/firestore");
+      return getFirestore(instance);
+    })();
+  }
+  return dbPromise;
 }
 
 /**

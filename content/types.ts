@@ -30,6 +30,14 @@ export interface Step {
   n: string;
   title: string;
   body: string;
+  /**
+   * Précision secondaire, rendue en plus petit et en gris.
+   *
+   * Sert notamment à nuancer le délai d'expédition : la fourchette annoncée
+   * ne vaut que « selon le volume et la destination », et cette réserve doit
+   * rester lisible sans alourdir le corps de l'étape.
+   */
+  note?: string;
 }
 
 /** Carte d'édition (Standard / Deluxe / Collector). */
@@ -47,6 +55,18 @@ export interface Field {
   placeholder: string;
   /** Message affiché quand la validation échoue sur ce champ. */
   error: string;
+}
+
+/**
+ * Groupe de choix exclusifs, rendu en boutons.
+ *
+ * Rendu par un vrai groupe de radios (fieldset + inputs masqués + labels
+ * stylés) : c'est la seule façon d'obtenir des boutons soignés ET la
+ * navigation clavier native aux flèches.
+ */
+export interface Choice {
+  label: string;
+  options: string[];
 }
 
 export interface Content {
@@ -97,12 +117,12 @@ export interface Content {
   how: {
     title: string;
     intro: string;
+    /** Six étapes du parcours, affichées une à la fois. */
     steps: Step[];
-    pipeline: {
-      /** Libellés accessibles des maillons .EXE → 💿 → 📦 → PLAYER */
-      labels: [string, string, string, string];
-      caption: string;
-    };
+    navPrev: string;
+    navNext: string;
+    /** « Étape {i} sur {n} » — gabarit, les deux jetons sont remplacés. */
+    progress: string;
   };
 
   whyNow: {
@@ -126,6 +146,24 @@ export interface Content {
       link: Field;
       platform: Field & { options: string[] };
       message: Field;
+      /**
+       * Groupes de qualification, tous OPTIONNELS.
+       *
+       * Un studio qui découvre le service n'a souvent aucune idée du volume :
+       * rendre ces champs obligatoires ferait abandonner au moment précis où
+       * l'on veut le contraire. Chacun propose une échappatoire (« Je ne sais
+       * pas encore », « À définir ensemble »).
+       */
+      qualification: {
+        legend: string;
+        stage: Choice;
+        volume: Choice;
+        edition: Choice;
+        team: Choice;
+      };
+      /** Titres des blocs du formulaire. */
+      sectionGame: string;
+      sectionYou: string;
       submit: string;
       submitting: string;
       required: string;
@@ -185,6 +223,11 @@ export interface Content {
     tabs: { profile: string; orders: string; games: string };
     profileName: string;
     profileEmail: string;
+    /** « Membre » — précède le numéro d'inscription. */
+    memberSince: string;
+    avatarLabel: string;
+    avatarMember: string;
+    avatarGoogle: string;
     noOrders: string;
     noGames: string;
     noGamesCta: string;

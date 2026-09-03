@@ -1,11 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { RadioGroup } from "@/components/ui/RadioGroup";
 import type { Content } from "@/content/types";
 import {
   hasErrors,
   LIMITS,
   validateApplication,
+  type AllowedChoices,
   type Errors,
   type FieldName,
 } from "@/lib/validate";
@@ -20,6 +22,12 @@ const EMPTY = {
   link: "",
   platform: "",
   message: "",
+  // Qualification — vides par défaut : aucune option n'est présélectionnée,
+  // pour ne pas fausser les réponses par un choix qu'on aurait suggéré.
+  stage: "",
+  volume: "",
+  edition: "",
+  team: "",
   website: "", // honeypot
 };
 
@@ -33,7 +41,17 @@ const EMPTY = {
  */
 export function ApplyForm({ t }: { t: Content }) {
   const f = t.founding.form;
+  const q = f.qualification;
   const uid = useId();
+
+  // Les options viennent du contenu : la validation refuse toute valeur qui
+  // n'y figure pas, côté client comme côté serveur.
+  const choices: AllowedChoices = {
+    stage: q.stage.options,
+    volume: q.volume.options,
+    edition: q.edition.options,
+    team: q.team.options,
+  };
   const [values, setValues] = useState(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
@@ -59,7 +77,7 @@ export function ApplyForm({ t }: { t: Content }) {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const found = validateApplication(values, f.platform.options);
+    const found = validateApplication(values, f.platform.options, choices);
     setErrors(found);
     if (hasErrors(found)) {
       // Focus sur le premier champ en erreur — obligatoire au clavier.
@@ -99,112 +117,162 @@ export function ApplyForm({ t }: { t: Content }) {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <TextField
-          id={`${uid}-name`}
-          field={f.name}
-          value={values.name}
-          onChange={set("name")}
-          invalid={!!errors.name}
-          maxLength={LIMITS.name}
-          autoComplete="name"
-          required
-          requiredLabel={f.required}
+    <form onSubmit={onSubmit} noValidate className="space-y-9">
+      {/* ---------- Qualification ----------
+          En premier : quatre clics rapides donnent le sentiment d'avancer
+          avant d'avoir à écrire quoi que ce soit. Tous optionnels. */}
+      <section className="space-y-6 rounded-xl border border-slate bg-carbon p-6 sm:p-7">
+        <p className="eyebrow">{q.legend}</p>
+        <RadioGroup
+          choice={q.stage}
+          name="stage"
+          value={values.stage}
+          onChange={set("stage")}
         />
-        <TextField
-          id={`${uid}-email`}
-          field={f.email}
-          value={values.email}
-          onChange={set("email")}
-          invalid={!!errors.email}
-          maxLength={LIMITS.email}
-          type="email"
-          autoComplete="email"
-          required
-          requiredLabel={f.required}
+        <RadioGroup
+          choice={q.volume}
+          name="volume"
+          value={values.volume}
+          onChange={set("volume")}
         />
-        <TextField
-          id={`${uid}-game`}
-          field={f.game}
-          value={values.game}
-          onChange={set("game")}
-          invalid={!!errors.game}
-          maxLength={LIMITS.game}
-          required
-          requiredLabel={f.required}
+        <RadioGroup
+          choice={q.edition}
+          name="edition"
+          value={values.edition}
+          onChange={set("edition")}
         />
-        <TextField
-          id={`${uid}-link`}
-          field={f.link}
-          value={values.link}
-          onChange={set("link")}
-          invalid={!!errors.link}
-          maxLength={LIMITS.link}
-          type="url"
-          inputMode="url"
-          required
-          requiredLabel={f.required}
+        <RadioGroup
+          choice={q.team}
+          name="team"
+          value={values.team}
+          onChange={set("team")}
         />
-      </div>
+      </section>
 
-      {/* Plateforme */}
-      <div>
-        <FieldLabel
-          htmlFor={`${uid}-platform`}
-          label={f.platform.label}
-          hint={f.required}
-        />
-        <select
-          id={`${uid}-platform`}
-          name="platform"
-          value={values.platform}
-          onChange={(e) => set("platform")(e.target.value)}
-          aria-invalid={!!errors.platform}
-          aria-describedby={errors.platform ? `${uid}-platform-err` : undefined}
-          className={`mt-2 h-12 w-full appearance-none rounded-lg border bg-ash px-4 text-[0.95rem] text-chalk transition-colors ${
-            errors.platform ? "border-ember" : "border-slate hover:border-smoke"
-          }`}
-        >
-          <option value="" disabled>
-            {f.platform.placeholder}
-          </option>
-          {f.platform.options.map((option) => (
-            <option key={option} value={option}>
-              {option}
+      {/* ---------- Le jeu ---------- */}
+      <section className="space-y-5">
+        <h3 className="eyebrow">{f.sectionGame}</h3>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <TextField
+            id={`${uid}-game`}
+            field={f.game}
+            value={values.game}
+            onChange={set("game")}
+            invalid={!!errors.game}
+            maxLength={LIMITS.game}
+            required
+            requiredLabel={f.required}
+          />
+          <TextField
+            id={`${uid}-link`}
+            field={f.link}
+            value={values.link}
+            onChange={set("link")}
+            invalid={!!errors.link}
+            maxLength={LIMITS.link}
+            type="url"
+            inputMode="url"
+            required
+            requiredLabel={f.required}
+          />
+        </div>
+
+        <div>
+          <FieldLabel
+            htmlFor={`${uid}-platform`}
+            label={f.platform.label}
+            hint={f.required}
+          />
+          <select
+            id={`${uid}-platform`}
+            name="platform"
+            value={values.platform}
+            onChange={(e) => set("platform")(e.target.value)}
+            aria-invalid={!!errors.platform}
+            aria-describedby={
+              errors.platform ? `${uid}-platform-err` : undefined
+            }
+            className={`mt-2 h-12 w-full appearance-none rounded-lg border bg-ash px-4 text-[0.95rem] text-chalk transition-colors ${
+              errors.platform
+                ? "border-ember"
+                : "border-slate hover:border-smoke"
+            }`}
+          >
+            <option value="" disabled>
+              {f.platform.placeholder}
             </option>
-          ))}
-        </select>
-        {errors.platform && (
-          <ErrorText id={`${uid}-platform-err`}>{f.platform.error}</ErrorText>
-        )}
-      </div>
+            {f.platform.options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          {errors.platform && (
+            <ErrorText id={`${uid}-platform-err`}>
+              {f.platform.error}
+            </ErrorText>
+          )}
+        </div>
+      </section>
 
-      {/* Message */}
-      <div>
-        <FieldLabel
-          htmlFor={`${uid}-message`}
-          label={f.message.label}
-          hint={f.optional}
-        />
-        <textarea
-          id={`${uid}-message`}
-          name="message"
-          rows={5}
-          value={values.message}
-          maxLength={LIMITS.message}
-          placeholder={f.message.placeholder}
-          onChange={(e) => set("message")(e.target.value)}
-          aria-invalid={!!errors.message}
-          aria-describedby={errors.message ? `${uid}-message-err` : undefined}
-          className={`mt-2 w-full resize-y border rounded-lg bg-ash px-4 py-3 text-[0.95rem] text-chalk placeholder:text-smoke transition-colors ${
-            errors.message ? "border-ember" : "border-slate hover:border-smoke"
-          }`}
-        />
-        {errors.message && (
-          <ErrorText id={`${uid}-message-err`}>{f.message.error}</ErrorText>
-        )}
-      </div>
+      {/* ---------- Vous ---------- */}
+      <section className="space-y-5">
+        <h3 className="eyebrow">{f.sectionYou}</h3>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <TextField
+            id={`${uid}-name`}
+            field={f.name}
+            value={values.name}
+            onChange={set("name")}
+            invalid={!!errors.name}
+            maxLength={LIMITS.name}
+            autoComplete="name"
+            required
+            requiredLabel={f.required}
+          />
+          <TextField
+            id={`${uid}-email`}
+            field={f.email}
+            value={values.email}
+            onChange={set("email")}
+            invalid={!!errors.email}
+            maxLength={LIMITS.email}
+            type="email"
+            autoComplete="email"
+            required
+            requiredLabel={f.required}
+          />
+        </div>
+
+        <div>
+          <FieldLabel
+            htmlFor={`${uid}-message`}
+            label={f.message.label}
+            hint={f.optional}
+          />
+          <textarea
+            id={`${uid}-message`}
+            name="message"
+            rows={5}
+            value={values.message}
+            maxLength={LIMITS.message}
+            placeholder={f.message.placeholder}
+            onChange={(e) => set("message")(e.target.value)}
+            aria-invalid={!!errors.message}
+            aria-describedby={
+              errors.message ? `${uid}-message-err` : undefined
+            }
+            className={`mt-2 w-full resize-y rounded-lg border bg-ash px-4 py-3 text-[0.95rem] text-chalk placeholder:text-smoke transition-colors ${
+              errors.message
+                ? "border-ember"
+                : "border-slate hover:border-smoke"
+            }`}
+          />
+          {errors.message && (
+            <ErrorText id={`${uid}-message-err`}>{f.message.error}</ErrorText>
+          )}
+        </div>
+      </section>
 
       {/* Piège à bots : hors flux, masqué aux lecteurs d'écran et au clavier. */}
       <div aria-hidden="true" className="fixed left-[-9999px] top-0 h-px w-px overflow-hidden">
