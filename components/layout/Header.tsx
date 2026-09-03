@@ -16,13 +16,25 @@ import { useEffect, useState } from "react";
  * Le switch de langue est un simple <Link> vers la même page dans l'autre
  * langue — aucun JS de traduction, les deux pages sont statiques.
  */
+/**
+ * En-tête du site.
+ *
+ * Reçoit `nav` et `navLabel`, PAS le contenu complet : c'est un composant
+ * client, et tout objet qu'on lui passe est sérialisé dans la charge utile
+ * envoyée au navigateur. Lui donner `t` entier y exposait l'intégralité du
+ * contenu du site — y compris le parcours destiné aux studios, avec le
+ * financement et la rémunération, que l'accueil ne doit plus montrer.
+ */
 export function Header({
   lang,
-  t,
+  nav,
+  navLabel,
   brand,
 }: {
   lang: Lang;
-  t: Content;
+  nav: Content["nav"];
+  /** Libellé accessible des deux <nav> (vient de `footer.navTitle`). */
+  navLabel: string;
   brand: BrandAssets;
 }) {
   const [scrolled, setScrolled] = useState(false);
@@ -53,10 +65,13 @@ export function Header({
   const anchor = (id: string) => (onHome ? `#${id}` : `${home}#${id}`);
 
   const links = [
-    { href: path("shop", lang), label: t.nav.shop },
-    { href: path("blog", lang), label: t.nav.blog },
-    { href: anchor(ANCHORS.how), label: t.nav.howItWorks },
-    { href: anchor(ANCHORS.faq), label: t.nav.faq },
+    { href: path("shop", lang), label: nav.shop },
+    { href: path("blog", lang), label: nav.blog },
+    { href: anchor(ANCHORS.faq), label: nav.faq },
+    // « Proposer mon jeu » : page dédiée, plus une ancre de l'accueil. Le
+    // lien reste dans la nav pour rester trouvable par les studios, tandis
+    // que le reste de la page s'adresse aux joueurs.
+    { href: path("submit", lang), label: nav.cta },
   ];
 
   return (
@@ -70,7 +85,7 @@ export function Header({
       <div className="mx-auto flex h-[4.5rem] w-full max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
         <Logo href={home} assets={brand} />
 
-        <nav aria-label={t.footer.navTitle} className="hidden items-center gap-7 lg:flex">
+        <nav aria-label={navLabel} className="hidden items-center gap-7 lg:flex">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -83,7 +98,7 @@ export function Header({
         </nav>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <CartBadge lang={lang} t={t} />
+          <CartBadge lang={lang} nav={nav} />
 
           <Link
             href={ready && user ? path("account", lang) : path("login", lang)}
@@ -91,7 +106,7 @@ export function Header({
           >
             <UserIcon />
             <span className="hidden md:inline">
-              {ready && user ? user.name : t.nav.login}
+              {ready && user ? user.name : nav.login}
             </span>
           </Link>
 
@@ -103,19 +118,19 @@ export function Header({
             // saut en défilement visible. Changer de langue doit laisser le
             // lecteur exactement où il est.
             scroll={false}
-            aria-label={t.nav.switchTo}
+            aria-label={nav.switchTo}
             className="inline-flex h-10 items-center rounded-lg px-2.5 text-[0.78rem] font-semibold text-smoke uppercase transition-colors hover:bg-carbon hover:text-chalk"
           >
             {other}
           </Link>
 
           <ButtonLink
-            href={anchor(ANCHORS.founding)}
+            href={path("submit", lang)}
             variant="primary"
             size="md"
             className="ml-1 hidden lg:inline-flex"
           >
-            {t.nav.cta}
+            {nav.cta}
           </ButtonLink>
 
           <button
@@ -123,7 +138,7 @@ export function Header({
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
-            aria-label={menuOpen ? t.nav.menuClose : t.nav.menuOpen}
+            aria-label={menuOpen ? nav.menuClose : nav.menuOpen}
             className="ml-1 flex size-10 items-center justify-center rounded-lg border border-slate bg-ash text-chalk lg:hidden"
           >
             <span aria-hidden="true" className="relative block h-3 w-4">
@@ -151,7 +166,7 @@ export function Header({
         className="border-t border-slate bg-void lg:hidden"
       >
         <nav
-          aria-label={t.footer.navTitle}
+          aria-label={navLabel}
           className="mx-auto flex w-full max-w-[1240px] flex-col px-5 py-6 sm:px-8"
         >
           {links.map((link) => (
@@ -169,16 +184,16 @@ export function Header({
             onClick={() => setMenuOpen(false)}
             className="border-b border-slate py-4 text-lg text-chalk"
           >
-            {ready && user ? t.nav.account : t.nav.login}
+            {ready && user ? nav.account : nav.login}
           </Link>
           <ButtonLink
-            href={anchor(ANCHORS.founding)}
+            href={path("submit", lang)}
             variant="primary"
             size="lg"
             className="mt-6"
             onClick={() => setMenuOpen(false)}
           >
-            {t.nav.cta}
+            {nav.cta}
           </ButtonLink>
         </nav>
       </div>

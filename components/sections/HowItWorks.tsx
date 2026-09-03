@@ -5,6 +5,18 @@ import type { Content } from "@/content/types";
 import { ANCHORS } from "@/lib/i18n";
 
 /**
+ * ⚠️ COMPOSANT CONSERVÉ MAIS PLUS RENDU.
+ *
+ * Le parcours en six étapes s'adresse aux studios et détaille le modèle
+ * économique (financement de la production, pourcentage reversé). Il a été
+ * retiré de la page d'accueil, qui s'adresse désormais aux joueurs : ces
+ * conditions se discutent en privé avec chaque studio.
+ *
+ * Le composant et son contenu (`content/*.ts`, bloc `how`) sont gardés
+ * intacts pour une éventuelle page partenaires, protégée par authentification.
+ * Ne pas le remonter sur une page publique sans revoir les étapes 02 et 04.
+ */
+/**
  * Le parcours, du premier message à la boîte.
  *
  * Les quatre cartes d'étapes ont été remplacées par un parcours en six

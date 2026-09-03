@@ -14,19 +14,19 @@ import type { Content } from "./types";
  */
 export const fr: Content = {
   meta: {
-    title: "dematgames.com — Votre jeu mérite une boîte",
+    title: "dematgames.com — Des jeux indés qu'on peut vraiment posséder",
     description:
-      "Transformez votre jeu indépendant en édition physique : boîtier, jaquette, livret, goodies. Fabrication à la demande dès 50 exemplaires, sans stock ni logistique à gérer.",
+      "Éditions physiques de jeux indépendants : boîtier, jaquette, livret. Fabriquées à la demande en Europe, expédiées chez vous. Un jeu qui vous appartient vraiment.",
     keywords: [
       "édition physique jeu vidéo",
       "jeu indé physique",
+      "acheter jeu indé en boîte",
       "boîtier jeu PC",
-      "fabrication à la demande",
-      "développeur indépendant",
+      "collection jeux vidéo",
       "édition collector indie",
       "dematgames",
     ],
-    ogAlt: "dematgames.com — Votre jeu mérite une boîte",
+    ogAlt: "dematgames.com — Éditions physiques de jeux indépendants",
   },
 
   nav: {
@@ -40,6 +40,9 @@ export const fr: Content = {
     faq: "Questions",
     contact: "Contact",
     cta: "Proposer mon jeu",
+    legal: "Mentions légales",
+    privacy: "Confidentialité",
+    terms: "CGV",
     skipToContent: "Aller au contenu principal",
     menuOpen: "Ouvrir le menu",
     menuClose: "Fermer le menu",
@@ -50,18 +53,18 @@ export const fr: Content = {
     // Remontée depuis l'ancienne section manifesto : la promesse arrive
     // désormais dès le premier écran, au-dessus du badge.
     tagline: ["Oubliez le téléchargement.", "Gardez le jeu."],
-    badge: "Éditions physiques pour jeux indépendants",
+    badge: "Éditions physiques, fabriquées à la demande",
     // Plus de capitales : le composant ne force plus l'uppercase, et une
     // phrase en casse normale porte mieux le ton « startup » voulu.
-    titleLines: ["Votre jeu", "mérite", "une boîte."],
+    titleLines: ["Des jeux indés", "qu'on peut", "vraiment posséder."],
     subtitle:
-      "Offrez à votre jeu une vraie édition physique : boîtier, jaquette, livret. Vous gardez la main sur la direction artistique, nous prenons en charge la fabrication et l'expédition.",
-    ctaPrimary: "Voir la boutique",
-    ctaSecondary: "Proposer mon jeu",
+      "Des éditions physiques de jeux indépendants : boîtier, jaquette, livret. Fabriquées à la demande en Europe, expédiées chez vous — et à vous pour de bon.",
+    ctaPrimary: "Voir le catalogue",
+    ctaSecondary: "Me prévenir de l'ouverture",
     reassurance: [
-      "Dès 50 exemplaires",
-      "Aucun stock à avancer",
-      "Expédition prise en charge",
+      "Fabriqué en Europe",
+      "À la demande, sans surstock",
+      "Expédition suivie",
     ],
     scrollHint: "Découvrir",
   },
@@ -214,6 +217,40 @@ export const fr: Content = {
     },
   },
 
+  opening: {
+    eyebrow: "Bientôt",
+    title: "La boutique ouvre bientôt.",
+    body: "Nous préparons les premières éditions avec les studios partenaires. Laissez votre adresse pour être prévenu le jour de l'ouverture — c'est tout ce que nous en ferons.",
+    emailLabel: "Votre adresse e-mail",
+    emailPlaceholder: "vous@exemple.com",
+    emailError: "Cette adresse ne semble pas valide.",
+    submit: "Me prévenir",
+    submitting: "Envoi…",
+    successTitle: "C'est noté.",
+    successBody: "Vous recevrez un message le jour de l'ouverture. Pas de newsletter, pas de relance.",
+    errorTitle: "L'envoi a échoué.",
+    errorBody: "Réessayez dans un instant, ou écrivez-nous à hello@dematgames.com.",
+    privacyNote:
+      "Votre adresse sert uniquement à vous prévenir de l'ouverture. Vous pouvez demander son retrait à tout moment.",
+    honeypotLabel: "Ne pas remplir",
+  },
+
+  preview: {
+    eyebrow: "Aperçu",
+    title: "À quoi ressemblera le catalogue.",
+    notice:
+      "Ces éditions illustrent le format et la finition. Le catalogue réel ouvrira avec nos premiers studios partenaires.",
+    cta: "Voir tout le catalogue",
+  },
+
+  submit: {
+    title: "Proposer mon jeu",
+    intro:
+      "Vous développez un jeu et vous aimeriez le voir en boîte ? Parlez-nous-en. Nous lisons chaque message et répondons à chacun.",
+    metaDescription:
+      "Proposez votre jeu indépendant pour une édition physique : boîtier, jaquette, livret, fabrication et expédition prises en charge.",
+  },
+
   shop: {
     title: "La boutique",
     intro:
@@ -251,8 +288,8 @@ export const fr: Content = {
     shippingNote: "Frais de port calculés à la commande.",
     closedTitle: "La boutique n'est pas encore ouverte.",
     closedBody:
-      "Ce parcours est une démonstration : aucun paiement n'est possible et aucune commande ne sera enregistrée. Nous sélectionnons en ce moment les premiers studios partenaires — si vous développez un jeu, c'est le moment de nous écrire.",
-    closedCta: "Proposer mon jeu",
+      "Ce parcours est une démonstration : aucun paiement n'est possible et aucune commande ne sera enregistrée. Laissez-nous votre adresse et vous serez prévenu dès que la boutique ouvrira.",
+    closedCta: "Me prévenir de l'ouverture",
     checkoutDisabled: "Paiement bientôt disponible",
   },
 
@@ -309,32 +346,36 @@ export const fr: Content = {
     title: "Questions fréquentes",
     items: [
       {
-        title: "Combien d'exemplaires dois-je commander au minimum ?",
-        body: "Cinquante. C'est le seuil à partir duquel un pressage a du sens ; les usines traditionnelles en demandent souvent cinq cents. Au-delà de ce premier tirage, la fabrication se fait à la commande : vous ne stockez rien.",
+        title: "Qu'est-ce que je reçois exactement ?",
+        body: "Une vraie édition physique : le jeu sur disque, dans un boîtier, avec sa jaquette et son livret. Selon l'édition choisie, s'y ajoutent des contenus imprimés ou des goodies. Le détail figure sur chaque fiche produit.",
       },
       {
-        title: "Qui gère la fabrication et l'expédition ?",
-        body: "Nous, de bout en bout. Pressage, impression, emballage, envoi au joueur et suivi du colis. Vous n'avez ni carton à manipuler ni bordereau à imprimer.",
+        title: "Le jeu fonctionne-t-il sans connexion ?",
+        body: "C'est tout l'intérêt. Le disque contient le jeu, installable et jouable sans compte ni téléchargement. Aucune plateforme ne peut vous le retirer.",
       },
       {
-        title: "Combien ça me coûte ?",
-        body: "Rien à l'avance. Nous finançons le pressage, l'impression et le stock ; vous touchez un pourcentage sur chaque exemplaire vendu. Le détail se fixe ensemble, selon le format et le volume — nous préférons en discuter plutôt que d'afficher une grille qui ne collerait à personne.",
+        title: "Et si mon ordinateur n'a pas de lecteur ?",
+        body: "C'est le cas de la plupart des portables récents. Nous proposons un lecteur CD/DVD externe USB dans la boutique : il se branche sans installation et sert pour toute votre collection.",
+      },
+      {
+        title: "Quand la boutique ouvre-t-elle ?",
+        body: "Nous préparons les premières éditions avec les studios partenaires. Laissez votre adresse dans le bloc « ouverture » de l'accueil : vous serez prévenu le jour même, et rien d'autre ne vous sera envoyé.",
       },
       {
         title: "Vers quels pays expédiez-vous ?",
         body: "Nous démarrons depuis la France, avec l'Union européenne comme premier périmètre. Le reste du monde suivra une fois la logistique rodée.",
       },
       {
-        title: "Mon jeu doit-il être déjà sorti ?",
-        body: "Non. Sorti, en accès anticipé ou à quelques mois de sa sortie : les trois cas nous intéressent. Une édition physique se prépare souvent en amont du lancement.",
+        title: "Les tirages sont-ils limités ?",
+        body: "Chaque édition est fabriquée à la demande, donc sans surstock ni destruction d'invendus. Certaines éditions spéciales sont limitées dans le temps ou en quantité — c'est indiqué sur la fiche quand c'est le cas.",
       },
       {
-        title: "Est-ce que je garde le contrôle du visuel ?",
-        body: "Entièrement. Jaquette, livret, sérigraphie du disque, goodies : vous fournissez la direction artistique, nous fabriquons. Aucun logo ni bandeau ne s'ajoute à votre packaging sans votre accord.",
+        title: "Puis-je revendre ou offrir mon exemplaire ?",
+        body: "Oui. C'est un objet qui vous appartient : vous pouvez le prêter, l'offrir, le revendre. Contrairement à une licence numérique, il ne dépend d'aucun compte.",
       },
       {
-        title: "Et les droits sur mon jeu ?",
-        body: "Ils restent les vôtres, sans exclusivité. Vous continuez à vendre en numérique où vous voulez, y compris pendant la production physique.",
+        title: "Je développe un jeu, comment vous le proposer ?",
+        body: "Par la page « proposer mon jeu ». Nous étudions chaque proposition et répondons à tout le monde, sous quelques jours.",
       },
     ],
   },
@@ -344,6 +385,7 @@ export const fr: Content = {
       "Éditions physiques pour jeux indépendants. Fabriquées en Europe, à la demande.",
     navTitle: "Navigation",
     socialTitle: "Nous suivre",
+    legalTitle: "Informations",
     social: [
       { label: "Discord", href: "#" },
       { label: "Bluesky", href: "#" },

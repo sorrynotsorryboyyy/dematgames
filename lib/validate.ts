@@ -121,10 +121,37 @@ export function hasErrors(errors: Errors): boolean {
 }
 
 /**
+ * Valide une inscription à l'alerte d'ouverture.
+ *
+ * Un seul champ, donc un simple booléen plutôt qu'un objet d'erreurs. On
+ * réutilise volontairement `EMAIL_RE` et `LIMITS.email` : deux règles de
+ * validation d'e-mail dans le même projet finiraient par diverger.
+ */
+export function isValidEmail(value: unknown): boolean {
+  if (typeof value !== "string") return false;
+  const email = value.trim();
+  return (
+    email.length > 0 && email.length <= LIMITS.email && EMAIL_RE.test(email)
+  );
+}
+
+/**
+ * Champs communs à tous les formulaires publics, utilisés pour la détection
+ * de robots. Volontairement dissocié de `ApplicationInput` : l'alerte
+ * d'ouverture n'a qu'un champ e-mail mais porte les mêmes pièges.
+ */
+export interface BotSignals {
+  /** Champ piège : rempli = bot. */
+  website?: string;
+  /** Horodatage d'ouverture du formulaire (ms epoch). */
+  startedAt?: number;
+}
+
+/**
  * Heuristiques anti-bot, sans captcha : champ piège rempli, ou formulaire
  * envoyé trop vite pour avoir été lu.
  */
-export function looksAutomated(input: Partial<ApplicationInput>): boolean {
+export function looksAutomated(input: BotSignals): boolean {
   if (input.website && input.website.trim() !== "") return true;
   if (typeof input.startedAt === "number" && Number.isFinite(input.startedAt)) {
     const elapsed = Date.now() - input.startedAt;

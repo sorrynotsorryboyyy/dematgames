@@ -14,11 +14,19 @@ export function otherLang(lang: Lang): Lang {
   return lang === "fr" ? "en" : "fr";
 }
 
-/** Ancres partagées entre le header, le footer et les sections. */
+/**
+ * Ancres partagées entre le header, le footer et les sections.
+ *
+ * `how` et `founding` ne sont plus rendues sur l'accueil : le parcours en six
+ * étapes et l'appel aux studios ont migré vers la page « proposer mon jeu ».
+ * Elles restent définies car la page dédiée les utilise.
+ */
 export const ANCHORS = {
   how: "how-it-works",
   faq: "faq",
   founding: "founding",
+  /** Bloc « prévenez-moi de l'ouverture », sur l'accueil. */
+  opening: "opening",
 } as const;
 
 /**
@@ -35,6 +43,11 @@ export const ROUTES = {
   login: { fr: "connexion", en: "login" },
   blog: { fr: "blog", en: "blog" },
   admin: { fr: "admin", en: "admin" },
+  /** Appel aux studios : sorti de l'accueil, qui s'adresse aux joueurs. */
+  submit: { fr: "proposer-mon-jeu", en: "submit-your-game" },
+  legal: { fr: "mentions-legales", en: "legal-notice" },
+  privacy: { fr: "confidentialite", en: "privacy" },
+  terms: { fr: "cgv", en: "terms" },
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

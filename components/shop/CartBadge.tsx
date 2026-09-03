@@ -12,17 +12,23 @@ import Link from "next/link";
  * alors aucun compteur. Rendre un « 0 » puis le remplacer provoquerait un
  * saut visuel, et rendre le vrai total côté serveur serait impossible.
  */
-export function CartBadge({ lang, t }: { lang: Lang; t: Content }) {
+export function CartBadge({
+  lang,
+  nav,
+}: {
+  lang: Lang;
+  nav: Content["nav"];
+}) {
   const { count, ready } = useCart();
 
   return (
     <Link
       href={path("cart", lang)}
-      aria-label={ready && count > 0 ? `${t.nav.cart} (${count})` : t.nav.cart}
+      aria-label={ready && count > 0 ? `${nav.cart} (${count})` : nav.cart}
       className="relative inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm text-smoke transition-colors hover:bg-carbon hover:text-chalk"
     >
       <CartIcon />
-      <span className="hidden sm:inline">{t.nav.cart}</span>
+      <span className="hidden sm:inline">{nav.cart}</span>
       {ready && count > 0 && (
         <span className="numeric inline-flex min-w-5 items-center justify-center rounded-full bg-ember px-1.5 text-[0.7rem] font-semibold text-white">
           {count}

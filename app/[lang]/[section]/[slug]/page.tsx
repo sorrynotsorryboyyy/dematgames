@@ -136,7 +136,12 @@ export default async function GamePage({
           {t.nav.skipToContent}
         </a>
 
-        <Header lang={lang} t={t} brand={brandAssets()} />
+        <Header
+        lang={lang}
+        nav={t.nav}
+        navLabel={t.footer.navTitle}
+        brand={brandAssets()}
+      />
 
         <main id="main" className="pt-[4.5rem]">
           <div className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-8 md:py-16 lg:px-12">
@@ -182,7 +187,12 @@ export default async function GamePage({
         {t.nav.skipToContent}
       </a>
 
-      <Header lang={lang} t={t} brand={brandAssets()} />
+      <Header
+        lang={lang}
+        nav={t.nav}
+        navLabel={t.footer.navTitle}
+        brand={brandAssets()}
+      />
 
       <main id="main" className="pt-[4.5rem]">
         <div className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-8 md:py-16 lg:px-12">

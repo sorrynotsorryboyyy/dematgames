@@ -72,7 +72,7 @@ export function Hero({ t, lang }: { t: Content; lang: Lang }) {
             <ButtonLink href={path("shop", lang)} variant="primary" size="lg">
               {t.hero.ctaPrimary}
             </ButtonLink>
-            <ButtonLink href={`#${ANCHORS.founding}`} variant="ghost" size="lg">
+            <ButtonLink href={`#${ANCHORS.opening}`} variant="ghost" size="lg">
               {t.hero.ctaSecondary}
               <span aria-hidden="true">→</span>
             </ButtonLink>

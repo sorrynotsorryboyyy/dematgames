@@ -6,6 +6,9 @@ import { CartView } from "@/components/shop/CartView";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BlogIndex } from "@/components/blog/BlogIndex";
 import { ShopCatalogue } from "@/components/shop/ShopCatalogue";
+import { ApplyForm } from "@/components/sections/ApplyForm";
+import { LegalPage } from "@/components/legal/LegalPage";
+import { getLegal, type LegalKey } from "@/content/legal";
 import { listCategories, listPosts } from "@/lib/blog";
 import { PRICING_IS_INDICATIVE } from "@/content/games";
 import { isLang, LANGS, type Lang } from "@/content/types";
@@ -23,7 +26,24 @@ import { notFound } from "next/navigation";
  * d'une langue ne demande pas de créer de nouveaux répertoires.
  */
 
-type SectionKey = "shop" | "cart" | "account" | "login" | "blog" | "admin";
+type SectionKey =
+  | "shop"
+  | "cart"
+  | "account"
+  | "login"
+  | "blog"
+  | "admin"
+  | "submit"
+  | "legal"
+  | "privacy"
+  | "terms";
+
+/** Sections rendues par le composant de document légal. */
+const LEGAL_KEYS = ["legal", "privacy", "terms"] as const;
+
+function isLegalKey(key: SectionKey): key is LegalKey {
+  return (LEGAL_KEYS as readonly string[]).includes(key);
+}
 
 /** Retrouve la section à partir du segment ET vérifie qu'il correspond à la langue. */
 function resolveSection(segment: string, lang: Lang): SectionKey | null {
@@ -53,6 +73,7 @@ export async function generateMetadata({
   if (!key) return {};
 
   const t = getContent(lang);
+  const legal = getLegal(lang);
   const titles: Record<SectionKey, string> = {
     shop: t.shop.title,
     cart: t.cart.title,
@@ -60,13 +81,24 @@ export async function generateMetadata({
     login: t.account.auth.loginTitle,
     blog: t.blog.title,
     admin: "Administration",
+    submit: t.submit.title,
+    legal: legal.legal.title,
+    privacy: legal.privacy.title,
+    terms: legal.terms.title,
   };
   const title = `${titles[key]} — dematgames.com`;
 
   return {
     metadataBase: new URL(SITE_URL),
     title,
-    description: key === "shop" ? t.shop.intro : t.meta.description,
+    description:
+      key === "shop"
+        ? t.shop.intro
+        : key === "submit"
+          ? t.submit.metaDescription
+          : isLegalKey(key)
+            ? legal[key].intro
+            : t.meta.description,
     alternates: {
       canonical: `/${lang}/${section}`,
       languages: Object.fromEntries(
@@ -76,10 +108,12 @@ export async function generateMetadata({
     // Panier, compte et connexion sont des pages d'état : rien à indexer.
     // Boutique et blog sont indexables ; panier, compte, connexion et
     // surtout /admin ne doivent jamais apparaître dans un moteur.
+    // Panier, compte, connexion et surtout /admin ne doivent jamais
+    // apparaître dans un moteur. Tout le reste est public et indexable.
     robots:
-      key === "shop" || key === "blog"
-        ? { index: true, follow: true }
-        : { index: false, follow: false },
+      key === "cart" || key === "account" || key === "login" || key === "admin"
+        ? { index: false, follow: false }
+        : { index: true, follow: true },
   };
 }
 
@@ -105,7 +139,12 @@ export default async function SectionPage({
         {t.nav.skipToContent}
       </a>
 
-      <Header lang={lang} t={t} brand={brandAssets()} />
+      <Header
+        lang={lang}
+        nav={t.nav}
+        navLabel={t.footer.navTitle}
+        brand={brandAssets()}
+      />
 
       <main id="main" className="pt-[4.5rem]">
         <div className="mx-auto w-full max-w-[1180px] px-5 py-14 sm:px-8 md:py-20 lg:px-12">
@@ -141,6 +180,42 @@ export default async function SectionPage({
           {key === "cart" && <CartView lang={lang} t={t} />}
           {key === "account" && <AccountView lang={lang} t={t} />}
           {key === "login" && <AuthView lang={lang} t={t} />}
+
+          {/* Appel aux studios : sorti de l'accueil, qui s'adresse aux
+              joueurs. Le formulaire est repris tel quel — mêmes écrans,
+              même validation. */}
+          {key === "submit" && (
+            <div className="mx-auto max-w-[46rem]">
+              <p className="eyebrow">{t.founding.eyebrow}</p>
+              <h1 className="display display-lg mt-4 text-chalk">
+                {t.submit.title}
+              </h1>
+              <p className="mt-5 text-[1.05rem] leading-[1.7] text-smoke">
+                {t.submit.intro}
+              </p>
+
+              {/* Le propos de l'ancienne section « studios fondateurs » :
+                  la sélection porte sur le jeu, pas sur un rang d'arrivée.
+                  Il n'a plus sa place sur l'accueil, qui s'adresse aux
+                  joueurs, mais il reste juste ici. */}
+              <div className="mt-12 rounded-xl border border-slate bg-carbon p-7 sm:p-9">
+                <h2 className="display text-[1.35rem] text-chalk sm:text-[1.5rem]">
+                  {t.founding.title}
+                </h2>
+                <p className="mt-4 text-[1.02rem] leading-[1.7] text-smoke">
+                  {t.founding.body}
+                </p>
+              </div>
+
+              <div className="mt-12">
+                <ApplyForm t={t} />
+              </div>
+            </div>
+          )}
+
+          {isLegalKey(key) && (
+            <LegalPage doc={getLegal(lang)[key]} lang={lang} />
+          )}
         </div>
       </main>
 

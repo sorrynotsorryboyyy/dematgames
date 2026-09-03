@@ -2,7 +2,7 @@
 
 import { Button, ButtonLink } from "@/components/ui/Button";
 import type { Content, Lang } from "@/content/types";
-import { ANCHORS, path } from "@/lib/i18n";
+import { path } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 import { useState } from "react";
 
@@ -190,10 +190,7 @@ export function AccountView({ lang, t }: { lang: Lang; t: Content }) {
             <p className="text-[1.02rem] leading-[1.7] text-smoke">
               {t.account.noGames}
             </p>
-            <ButtonLink
-              href={`/${lang}#${ANCHORS.founding}`}
-              className="mt-6"
-            >
+            <ButtonLink href={path("submit", lang)} className="mt-6">
               {t.account.noGamesCta}
             </ButtonLink>
           </Panel>

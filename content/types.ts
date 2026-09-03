@@ -88,6 +88,10 @@ export interface Content {
     faq: string;
     contact: string;
     cta: string;
+    /** Liens légaux, rendus dans le pied de page. */
+    legal: string;
+    privacy: string;
+    terms: string;
     /** Lien d'évitement pour lecteurs d'écran et navigation clavier. */
     skipToContent: string;
     menuOpen: string;
@@ -177,6 +181,47 @@ export interface Content {
       /** Champ piège anti-bot, masqué visuellement. */
       honeypotLabel: string;
     };
+  };
+
+  /**
+   * Bloc « la boutique ouvre bientôt », sur l'accueil.
+   *
+   * Le site s'adresse aux joueurs, mais la boutique n'encaisse pas encore :
+   * plutôt que de le masquer, on l'annonce et on propose d'être prévenu.
+   */
+  opening: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    emailError: string;
+    submit: string;
+    submitting: string;
+    successTitle: string;
+    successBody: string;
+    errorTitle: string;
+    errorBody: string;
+    /** Mention RGPD sous le champ : à quoi sert l'adresse. */
+    privacyNote: string;
+    /** Champ piège anti-bot, masqué visuellement. */
+    honeypotLabel: string;
+  };
+
+  /** Aperçu du catalogue sur l'accueil. */
+  preview: {
+    eyebrow: string;
+    title: string;
+    /** Mention affichée AU-DESSUS de la grille : ces jeux sont des exemples. */
+    notice: string;
+    cta: string;
+  };
+
+  /** Page dédiée aux studios — sortie de l'accueil. */
+  submit: {
+    title: string;
+    intro: string;
+    metaDescription: string;
   };
 
   shop: {
@@ -280,6 +325,7 @@ export interface Content {
     tagline: string;
     navTitle: string;
     socialTitle: string;
+    legalTitle: string;
     social: { label: string; href: string }[];
     signature: string;
     rights: string;

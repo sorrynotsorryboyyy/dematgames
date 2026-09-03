@@ -23,6 +23,8 @@ export const COLLECTIONS = {
   posts: "posts",
   categories: "categories",
   applications: "applications",
+  /** Adresses laissées pour être prévenu de l'ouverture de la boutique. */
+  subscribers: "subscribers",
 } as const;
 
 /* ------------------------------------------------------------------

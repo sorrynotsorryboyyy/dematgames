@@ -7,6 +7,7 @@ import {
   type ApplicationInput,
 } from "@/lib/validate";
 import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
+import { clientIp, rateLimited } from "@/lib/rate-limit";
 import { COLLECTIONS } from "@/lib/schema";
 import { NextResponse } from "next/server";
 
@@ -24,44 +25,11 @@ export const runtime = "nodejs";
 /** La route doit s'exécuter à chaque appel, jamais être mise en cache. */
 export const dynamic = "force-dynamic";
 
-/**
- * Limitation de débit en mémoire.
- *
- * ATTENTION : suffisant pour une landing sur une seule instance, mais l'état
- * est perdu au redémarrage et n'est pas partagé entre instances. En production
- * multi-instance (ou serverless), remplacer par Upstash Redis / Vercel KV.
- */
+/** Cinq candidatures par heure et par IP : large pour un humain, étroit pour un script. */
 const RATE_LIMIT = { max: 5, windowMs: 60 * 60 * 1000 };
-const hits = new Map<string, { count: number; resetAt: number }>();
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = hits.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    hits.set(ip, { count: 1, resetAt: now + RATE_LIMIT.windowMs });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > RATE_LIMIT.max;
-}
-
-/** Purge des entrées expirées : évite que la Map ne grossisse indéfiniment. */
-function sweep() {
-  const now = Date.now();
-  for (const [ip, entry] of hits) {
-    if (now > entry.resetAt) hits.delete(ip);
-  }
-}
 
 export async function POST(request: Request) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown";
-
-  sweep();
-  if (rateLimited(ip)) {
+  if (rateLimited("apply", clientIp(request), RATE_LIMIT)) {
     return NextResponse.json(
       { ok: false, error: "rate_limited" },
       { status: 429 },

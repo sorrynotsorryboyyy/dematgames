@@ -22,7 +22,7 @@ import { useState } from "react";
  *    d'écran l'annonce et la manipule exactement comme un accordéon ; seule
  *    la présentation change.
  */
-export function Faq({ t }: { t: Content }) {
+export function Faq({ faq }: { faq: Content["faq"] }) {
   // Une seule carte retournée à la fois : deux réponses ouvertes côte à côte
   // créeraient un décalage de hauteur désordonné.
   const [open, setOpen] = useState<number | null>(null);
@@ -31,12 +31,12 @@ export function Faq({ t }: { t: Content }) {
     <Section id={ANCHORS.faq} tone="void" labelledBy="faq-title">
       <Reveal className="max-w-2xl">
         <h2 id="faq-title" className="display display-lg text-chalk">
-          {t.faq.title}
+          {faq.title}
         </h2>
       </Reveal>
 
       <ul className="mt-12 grid gap-5 md:mt-14 md:grid-cols-2">
-        {t.faq.items.map((item, i) => {
+        {faq.items.map((item, i) => {
           const flipped = open === i;
           return (
             <Reveal

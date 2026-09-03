@@ -120,7 +120,7 @@ export function CartView({ lang, t }: { lang: Lang; t: Content }) {
           {t.cart.closedBody}
         </p>
         <ButtonLink
-          href={`/${lang}#${ANCHORS.founding}`}
+          href={`/${lang}#${ANCHORS.opening}`}
           className="mt-7"
           size="lg"
         >

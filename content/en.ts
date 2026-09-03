@@ -10,19 +10,19 @@ import type { Content } from "./types";
  */
 export const en: Content = {
   meta: {
-    title: "dematgames.com — Your game deserves a box",
+    title: "dematgames.com — Indie games you can actually own",
     description:
-      "Turn your indie game into a physical edition: case, cover art, booklet, extras. Made on demand from 50 copies, with no stock to front and no logistics to run.",
+      "Physical editions of independent games: case, cover art, booklet. Made on demand in Europe and shipped to your door. A game that is genuinely yours.",
     keywords: [
       "physical edition video game",
       "indie game physical release",
+      "buy indie game boxed",
       "PC game box",
-      "on-demand manufacturing",
-      "independent developer",
+      "video game collection",
       "indie collector edition",
       "dematgames",
     ],
-    ogAlt: "dematgames.com — Your game deserves a box",
+    ogAlt: "dematgames.com — Physical editions of independent games",
   },
 
   nav: {
@@ -36,6 +36,9 @@ export const en: Content = {
     faq: "FAQ",
     contact: "Contact",
     cta: "Submit my game",
+    legal: "Legal notice",
+    privacy: "Privacy",
+    terms: "Terms",
     skipToContent: "Skip to main content",
     menuOpen: "Open menu",
     menuClose: "Close menu",
@@ -46,16 +49,16 @@ export const en: Content = {
     // Moved up from the old manifesto section: the promise now lands on the
     // first screen, above the badge.
     tagline: ["Kill the download.", "Keep the game."],
-    badge: "Physical editions for indie games",
-    titleLines: ["Your game", "deserves", "a box."],
+    badge: "Physical editions, made on demand",
+    titleLines: ["Indie games", "you can", "actually own."],
     subtitle:
-      "Give your game a real physical edition: case, cover art, booklet. You keep control of the art direction — we handle manufacturing and shipping.",
-    ctaPrimary: "Visit the shop",
-    ctaSecondary: "Submit my game",
+      "Physical editions of independent games: case, cover art, booklet. Made on demand in Europe, shipped to your door — and yours for good.",
+    ctaPrimary: "Browse the catalogue",
+    ctaSecondary: "Tell me when it opens",
     reassurance: [
-      "From 50 copies",
-      "No stock to front",
-      "Shipping handled",
+      "Made in Europe",
+      "On demand, no overstock",
+      "Tracked shipping",
     ],
     scrollHint: "Explore",
   },
@@ -208,6 +211,40 @@ export const en: Content = {
     },
   },
 
+  opening: {
+    eyebrow: "Coming soon",
+    title: "The shop opens soon.",
+    body: "We are preparing the first editions with our partner studios. Leave your address to hear about it on opening day — that is all we will use it for.",
+    emailLabel: "Your email address",
+    emailPlaceholder: "you@example.com",
+    emailError: "That address does not look valid.",
+    submit: "Notify me",
+    submitting: "Sending…",
+    successTitle: "You are on the list.",
+    successBody: "We will write to you on opening day. No newsletter, no follow-ups.",
+    errorTitle: "That did not go through.",
+    errorBody: "Try again in a moment, or write to hello@dematgames.com.",
+    privacyNote:
+      "Your address is only used to tell you when the shop opens. You can ask us to remove it at any time.",
+    honeypotLabel: "Leave this empty",
+  },
+
+  preview: {
+    eyebrow: "Preview",
+    title: "What the catalogue will look like.",
+    notice:
+      "These editions illustrate the format and finish. The real catalogue opens with our first partner studios.",
+    cta: "See the full catalogue",
+  },
+
+  submit: {
+    title: "Submit your game",
+    intro:
+      "Building a game and want to see it in a box? Tell us about it. We read every message and reply to all of them.",
+    metaDescription:
+      "Submit your independent game for a physical edition: case, cover art, booklet, manufacturing and shipping handled.",
+  },
+
   shop: {
     title: "The shop",
     intro:
@@ -245,8 +282,8 @@ export const en: Content = {
     shippingNote: "Shipping calculated at checkout.",
     closedTitle: "The shop isn't open yet.",
     closedBody:
-      "This flow is a demonstration: no payment is possible and no order will be recorded. We're currently selecting our first partner studios — if you're building a game, now is the time to write to us.",
-    closedCta: "Submit my game",
+      "This flow is a demonstration: no payment is possible and no order will be recorded. Leave us your address and we will tell you as soon as the shop opens.",
+    closedCta: "Tell me when it opens",
     checkoutDisabled: "Checkout coming soon",
   },
 
@@ -302,32 +339,36 @@ export const en: Content = {
     title: "Frequently asked questions",
     items: [
       {
-        title: "What's the minimum number of copies?",
-        body: "Fifty. That's the point where pressing starts to make sense; traditional plants often ask for five hundred. Past that first run, copies are made to order — you hold no stock.",
+        title: "What exactly do I get?",
+        body: "A real physical edition: the game on disc, in a case, with cover art and a booklet. Depending on the edition, printed extras or goodies come with it. Each product page lists what is included.",
       },
       {
-        title: "Who handles manufacturing and shipping?",
-        body: "We do, end to end. Pressing, printing, packing, delivery to the player and parcel tracking. No boxes to handle, no labels to print on your side.",
+        title: "Does the game work offline?",
+        body: "That is the whole point. The disc holds the game, installable and playable with no account and no download. No platform can take it away from you.",
       },
       {
-        title: "What does it cost me?",
-        body: "Nothing up front. We fund the pressing, the printing and the stock; you earn a share of every copy sold. The details are agreed together, based on format and volume — we'd rather talk it through than publish a grid that fits nobody.",
+        title: "What if my computer has no disc drive?",
+        body: "Most recent laptops do not. We sell an external USB CD/DVD drive in the shop: plug it in, no installation, and it works for your whole collection.",
+      },
+      {
+        title: "When does the shop open?",
+        body: "We are preparing the first editions with our partner studios. Leave your address in the opening block on the home page and you will hear from us that day — nothing else.",
       },
       {
         title: "Which countries do you ship to?",
-        body: "We're starting from France, with the European Union as the first territory. The rest of the world follows once the logistics are proven.",
+        body: "We start from France, with the European Union as our first area. The rest of the world follows once the logistics are settled.",
       },
       {
-        title: "Does my game need to be released already?",
-        body: "No. Released, in early access, or a few months from launch — all three work. Physical editions are often best prepared ahead of release.",
+        title: "Are the runs limited?",
+        body: "Every edition is made on demand, so there is no overstock and nothing gets pulped. Some special editions are limited in time or quantity — the product page says so when that is the case.",
       },
       {
-        title: "Do I keep control of the artwork?",
-        body: "Entirely. Cover, booklet, disc print, extras: you provide the art direction and we manufacture. Nothing is added to your packaging without your approval.",
+        title: "Can I resell or gift my copy?",
+        body: "Yes. It is an object you own: lend it, give it, sell it on. Unlike a digital licence, it does not depend on any account.",
       },
       {
-        title: "What about the rights to my game?",
-        body: "They stay yours, with no exclusivity. You keep selling digitally wherever you like, including while physical copies are in production.",
+        title: "I make games — how do I submit mine?",
+        body: "Through the submit-your-game page. We review every submission and reply to everyone within a few days.",
       },
     ],
   },
@@ -337,6 +378,7 @@ export const en: Content = {
       "Physical editions for independent games. Made in Europe, on demand.",
     navTitle: "Navigation",
     socialTitle: "Follow us",
+    legalTitle: "Information",
     social: [
       { label: "Discord", href: "#" },
       { label: "Bluesky", href: "#" },
