@@ -77,6 +77,32 @@ export function translatePath(pathname: string, to: Lang): string {
   return `/${to}`;
 }
 
+function resolveSiteUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  // `??` ne se déclenche que sur null/undefined : une variable définie mais
+  // VIDE (cas courant sur Vercel) passait au travers et produisait `new
+  // URL("")`, qui lève ERR_INVALID_URL et fait échouer tout le build.
+  // On traite donc la chaîne vide comme une absence.
+  if (configured) {
+    const candidate = /^https?:\/\//.test(configured)
+      ? configured
+      : `https://${configured}`;
+    try {
+      // Valide la forme avant de la propager : une URL malformée ferait
+      // échouer le prerender de chaque page, loin d'ici.
+      new URL(candidate);
+      return candidate.replace(/\/$/, "");
+    } catch {
+      // Valeur inexploitable : on retombe sur les valeurs par défaut.
+    }
+  }
+
+  return process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://dematgames.gg";
+}
+
 /**
  * URL publique du site.
  *
@@ -85,11 +111,6 @@ export function translatePath(pathname: string, to: Lang): string {
  * sur le domaine de production : sans cela, un `npm run dev` génèrerait des
  * canonicals pointant vers le site en ligne.
  */
-export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : "https://dematgames.gg")
-).replace(/\/$/, "");
+export const SITE_URL = resolveSiteUrl();
 
 export const CONTACT_EMAIL = "hello@dematgames.gg";
