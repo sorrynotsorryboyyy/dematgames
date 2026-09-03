@@ -88,18 +88,54 @@ function normalizePrivateKey(raw: string | undefined): string | undefined {
 
 const privateKey = normalizePrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY);
 
-/** Retire d'éventuels guillemets autour d'une variable simple. */
+/**
+ * Nettoie une variable simple : guillemets englobants et espaces de bord.
+ *
+ * `trim()` retire notamment un saut de ligne final, que certaines interfaces
+ * d'hébergeur ajoutent silencieusement au collage.
+ */
 function unquote(value: string | undefined): string | undefined {
   if (!value) return undefined;
   const v = value.trim();
   const quoted =
     (v.startsWith('"') && v.endsWith('"')) ||
     (v.startsWith("'") && v.endsWith("'"));
-  return (quoted ? v.slice(1, -1) : v) || undefined;
+  return (quoted ? v.slice(1, -1).trim() : v) || undefined;
+}
+
+/**
+ * Vérifie la FORME des identifiants avant de tenter une connexion.
+ *
+ * Un identifiant de projet Firebase ne contient que des minuscules, chiffres
+ * et tirets ; un e-mail de compte de service finit toujours par
+ * `.iam.gserviceaccount.com`. Une valeur mal collée (fragment voisin, retour
+ * à la ligne, deux variables concaténées) échouerait sinon beaucoup plus
+ * loin, sous une forme incompréhensible.
+ *
+ * On journalise plutôt que de lever : le site doit rester debout, seule
+ * l'administration devient indisponible.
+ */
+function looksValid(): boolean {
+  if (projectId && !/^[a-z0-9-]{4,64}$/.test(projectId)) {
+    console.error(
+      "[firebase-admin] FIREBASE_ADMIN_PROJECT_ID a une forme inattendue " +
+        `(${projectId.length} caractères). Attendu : minuscules, chiffres et ` +
+        "tirets uniquement, sans espace ni saut de ligne.",
+    );
+    return false;
+  }
+  if (clientEmail && !clientEmail.endsWith(".iam.gserviceaccount.com")) {
+    console.error(
+      "[firebase-admin] FIREBASE_ADMIN_CLIENT_EMAIL ne ressemble pas à un " +
+        "compte de service (doit finir par .iam.gserviceaccount.com).",
+    );
+    return false;
+  }
+  return true;
 }
 
 export const isAdminConfigured = Boolean(
-  projectId && clientEmail && privateKey,
+  projectId && clientEmail && privateKey && looksValid(),
 );
 
 let app: App | null = null;

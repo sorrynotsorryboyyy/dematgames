@@ -64,12 +64,18 @@ export async function GET() {
 /** Décrit une variable sans révéler sa valeur. */
 function describe(value: string | undefined) {
   if (!value) return { present: false };
+  const trimmed = value.trim();
   return {
     present: true,
     length: value.length,
     quoted: value.startsWith('"') || value.startsWith("'"),
+    // Signale les caractères parasites les plus courants au collage : une
+    // variable qui contient un saut de ligne ou un espace a presque toujours
+    // été copiée avec du texte voisin.
+    hasWhitespace: /\s/.test(trimmed),
+    trailingNewline: value !== value.trimEnd(),
     // Seuls les 4 derniers caractères : suffisant pour repérer une valeur
-    // tronquée, insuffisant pour reconstituer quoi que ce soit.
-    endsWith: value.slice(-4),
+    // tronquée ou rallongée, insuffisant pour reconstituer quoi que ce soit.
+    endsWith: trimmed.slice(-4),
   };
 }
