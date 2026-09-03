@@ -52,6 +52,32 @@ Poids en production : **~215 Ko gzip** pour l'accueil, **~205 Ko** pour les
 pages boutique (dont ~180 Ko de runtime React/Next partagé), **zéro image
 bitmap** au premier rendu.
 
+### Pourquoi `overrides: { "jose": "^5.9.6" }`
+
+`package.json` ne permet pas les commentaires, donc l'explication est ici.
+
+`firebase-admin` dépend de `jwks-rsa`, qui charge `jose` avec `require()`.
+Or `jose` 6.x est passé en **ESM uniquement** : le `require()` échoue avec
+`ERR_REQUIRE_ESM`, et Node refuse de charger `firebase-admin/auth`.
+
+Conséquence observée en production : toutes les routes qui **vérifient un
+jeton** renvoyaient un 500 au corps vide — l'échec survenait à l'import du
+module, avant tout `try/catch` applicatif. Firestore, lui, se chargeait
+normalement, d'où un blog fonctionnel pendant que l'administration était
+inaccessible : un symptôme trompeur.
+
+L'`override` fige `jose` en 5.x, dernière branche qui publie un build
+CommonJS. L'API utilisée par `jwks-rsa` (`importJWK`, `jwtVerify`,
+`decodeProtectedHeader`) est identique entre 5 et 6 — la rétrogradation ne
+change aucun comportement.
+
+**À retirer** quand `jwks-rsa` publiera une version compatible ESM. Test de
+non-régression, à exécuter après toute mise à jour de `firebase-admin` :
+
+```bash
+node -e "require('firebase-admin/auth'); console.log('OK')"
+```
+
 ## Architecture
 
 ```
