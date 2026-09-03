@@ -26,17 +26,77 @@ import { COLLECTIONS, isRole, type Role } from "@/lib/schema";
  * fichier JSON de compte de service généré dans la console Firebase.
  */
 
-const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+const projectId = unquote(process.env.FIREBASE_ADMIN_PROJECT_ID);
+const clientEmail = unquote(process.env.FIREBASE_ADMIN_CLIENT_EMAIL);
 /**
- * La clé privée contient des retours à la ligne. Les variables
- * d'environnement (Vercel comme .env) les stockent échappés en `\n` : il faut
- * les restaurer, sinon la signature échoue avec une erreur peu parlante.
+ * Normalise la clé privée du compte de service.
+ *
+ * Trois pièges, chacun produisant la même erreur illisible
+ * (`ERR_OSSL_UNSUPPORTED`, « DECODER routines::unsupported ») :
+ *
+ * 1. GUILLEMETS ENGLOBANTS. Un fichier `.env` écrit souvent
+ *    `KEY="-----BEGIN..."`, et la valeur lue conserve les guillemets. Le PEM
+ *    commence alors par `"-----BEGIN`, qu'OpenSSL refuse. C'était la cause
+ *    des 500 en production : le module échouait AU CHARGEMENT, avant même
+ *    d'exécuter la moindre ligne du handler — d'où un 500 au corps vide,
+ *    que le try/catch des routes ne pouvait pas rattraper.
+ * 2. RETOURS À LA LIGNE ÉCHAPPÉS. La clé est multiligne ; les variables
+ *    d'environnement la stockent avec des `\n` littéraux à restaurer.
+ * 3. ESPACES DE BORD, ajoutés au copier-coller.
+ *
+ * Le base64 est également accepté : certains guides recommandent d'encoder
+ * la clé pour contourner ces problèmes.
  */
-const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(
-  /\\n/g,
-  "\n",
-);
+function normalizePrivateKey(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  let key = raw.trim();
+
+  // 1. Guillemets englobants, simples ou doubles.
+  const quoted =
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"));
+  if (quoted) key = key.slice(1, -1);
+
+  // 2. Retours à la ligne échappés.
+  //
+  // On boucle jusqu'à stabilisation car l'échappement peut être DOUBLE
+  // (\\\\n au lieu de \\n) : un fichier .env réécrit par un script, ou
+  // une valeur copiée depuis un JSON déjà échappé, produit ce cas. Un simple
+  // replace laisserait des \\n littéraux dans le PEM, qu'OpenSSL refuse
+  // avec un message parfaitement opaque (ERR_OSSL_UNSUPPORTED).
+  let previous: string;
+  do {
+    previous = key;
+    key = key
+      .replace(/\\\\n/g, "\n")
+      .replace(/\\n/g, "\n");
+  } while (key !== previous);
+
+  // 3. Clé fournie en base64 (aucun marqueur PEM visible) : on décode.
+  if (!key.includes("BEGIN")) {
+    try {
+      const decoded = Buffer.from(key, "base64").toString("utf8");
+      if (decoded.includes("BEGIN")) key = decoded;
+    } catch {
+      // Pas du base64 exploitable : on garde la valeur telle quelle.
+    }
+  }
+
+  key = key.trim();
+  return key || undefined;
+}
+
+const privateKey = normalizePrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY);
+
+/** Retire d'éventuels guillemets autour d'une variable simple. */
+function unquote(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const v = value.trim();
+  const quoted =
+    (v.startsWith('"') && v.endsWith('"')) ||
+    (v.startsWith("'") && v.endsWith("'"));
+  return (quoted ? v.slice(1, -1) : v) || undefined;
+}
 
 export const isAdminConfigured = Boolean(
   projectId && clientEmail && privateKey,
