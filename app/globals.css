@@ -1,0 +1,457 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens — Tailwind v4 (config dans le CSS, pas de tailwind.config.js)
+
+   THÈME CLAIR. Le contraste DIGITAL vs PHYSICAL ne passe plus par
+   l'obscurité mais par la matière : papier, ombres douces, grain léger.
+
+   Les NOMS de tokens sont conservés depuis la version sombre (void, carbon,
+   ash, chalk, smoke) — seules leurs VALEURS changent. C'est ce qui permet de
+   basculer tout le site depuis ce fichier sans réécrire les className de
+   chaque composant. Les noms ne décrivent donc plus une couleur mais un rôle :
+
+     void   = fond principal      carbon = fond alterné
+     ash    = surface de carte    slate  = bordure
+     chalk  = texte principal     smoke  = texte secondaire
+   ------------------------------------------------------------------ */
+@theme {
+  --color-void: #fbfaf8; /* fond principal — blanc cassé chaud */
+  --color-carbon: #f2f0ec; /* sections alternées */
+  --color-ash: #ffffff; /* surfaces de cartes */
+  --color-slate: #e3e0da; /* bordures */
+  --color-chalk: #16161a; /* texte principal — 17.3:1 sur le fond */
+  --color-smoke: #5b5b66; /* texte secondaire — 6.4:1 sur le fond */
+
+  /* Accent. #ff3b14 (thème sombre) tombait à 4.15:1 sur fond clair, sous le
+     seuil AA. #c2410c conserve la chaleur et passe à 4.96:1 en texte,
+     5.18:1 en bouton plein avec du blanc. */
+  --color-ember: #c2410c;
+  --color-ember-soft: #fdf0e9; /* fond de puce / survol très léger */
+
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+  --font-display:
+    var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Ombres douces et diffuses — le registre « startup » plutôt que les
+     bordures marquées du thème sombre. */
+  --shadow-soft: 0 1px 2px rgb(22 22 26 / 0.04), 0 4px 12px rgb(22 22 26 / 0.05);
+  --shadow-lift: 0 2px 4px rgb(22 22 26 / 0.05), 0 12px 28px rgb(22 22 26 / 0.09);
+  --shadow-box: 0 18px 50px -12px rgb(22 22 26 / 0.28);
+}
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+* {
+  border-color: var(--color-slate);
+}
+
+html {
+  /* Un seul thème : pas de bascule clair/sombre. */
+  color-scheme: light;
+  scroll-behavior: smooth;
+  /* Le header sticky ne doit pas recouvrir la cible d'une ancre. */
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-chalk);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--color-ember);
+  color: #fff;
+}
+
+/* Focus visible cohérent sur toute la page — ember, jamais supprimé. */
+:focus-visible {
+  outline: 2px solid var(--color-ember);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------------------
+   Typographie d'affichage
+
+   Registre « startup » : titres plus mesurés et poids 700 au lieu de 800.
+   La version gaming poussait à 5rem / 800 ; à cette échelle le ton devenait
+   agressif et excluait les jeux familiaux.
+   ------------------------------------------------------------------ */
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  /* Space Grotesk est déjà assez serrée nativement : -0.02em (calibré pour
+     Inter) collait les lettres. -0.01em lui laisse respirer. */
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.display-xl {
+  font-size: clamp(2rem, 4.6vw, 3.5rem);
+}
+
+.display-lg {
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+}
+
+.display-md {
+  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+}
+
+/* Label au-dessus d'un titre. Sans-serif désormais : le monospace est
+   réservé aux prix et aux données. */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-smoke);
+}
+
+/* Prix, quantités, numéros d'étape et cotes.
+
+   Space Grotesk plutôt que le monospace système : ses chiffres ont le
+   caractère « plan technique » de l'identité, et `tabular-nums` garantit
+   l'alignement vertical dans le panier. Le monospace système variait d'un
+   OS à l'autre — aucune maîtrise sur le rendu. */
+.numeric {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* ------------------------------------------------------------------
+   Surfaces
+   ------------------------------------------------------------------ */
+.card {
+  background-color: var(--color-ash);
+  border: 1px solid var(--color-slate);
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ------------------------------------------------------------------
+   Textures — un seul effet, jamais interactif.
+   ------------------------------------------------------------------ */
+
+/* Grain papier. SVG inline : aucune requête réseau.
+   Opacité relevée à 0.05 : sur fond clair, 0.035 était invisible. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Grille très discrète — remplace la « grille technique » du thème sombre. */
+.grid-tech {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-slate) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-slate) 70%, transparent) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* Masque radial : la grille s'estompe vers les bords, jamais de coupe nette. */
+.fade-edges {
+  mask-image: radial-gradient(ellipse 75% 60% at 50% 40%, #000 35%, transparent 100%);
+}
+
+/* ------------------------------------------------------------------
+   Révélation au scroll (piloté par useReveal)
+   Uniquement transform + opacity : composité par le GPU, zéro reflow.
+   ------------------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.7s var(--ease-out-expo),
+    transform 0.7s var(--ease-out-expo);
+}
+
+.reveal[data-revealed="true"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Décalage en cascade pour les grilles de cartes. */
+.reveal[data-delay="1"] { transition-delay: 80ms; }
+.reveal[data-delay="2"] { transition-delay: 160ms; }
+.reveal[data-delay="3"] { transition-delay: 240ms; }
+.reveal[data-delay="4"] { transition-delay: 320ms; }
+.reveal[data-delay="5"] { transition-delay: 400ms; }
+
+/* ------------------------------------------------------------------
+   Tilt 3D (piloté par lib/useTilt.ts)
+   Le hook écrit directement dans style.transform ; le CSS ne fournit que
+   le contexte 3D et la transition de retour au repos.
+   ------------------------------------------------------------------ */
+.tilt-scene {
+  perspective: 900px;
+}
+
+.tilt-target {
+  transform-style: preserve-3d;
+  transition: box-shadow 0.3s var(--ease-out-expo);
+}
+
+.tilt-target[data-tilting="true"] {
+  box-shadow: var(--shadow-lift);
+}
+
+/* ------------------------------------------------------------------
+   Animations nommées
+   ------------------------------------------------------------------ */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+
+@keyframes float-box {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes sheen {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(320%) skewX(-18deg); }
+}
+
+@keyframes scroll-hint {
+  0%, 100% { transform: translateY(0); opacity: 0.35; }
+  50% { transform: translateY(7px); opacity: 1; }
+}
+
+.animate-pulse-dot { animation: pulse-dot 2.4s ease-in-out infinite; }
+.animate-float-box { animation: float-box 7s ease-in-out infinite; }
+.animate-scroll-hint { animation: scroll-hint 2s ease-in-out infinite; }
+
+/* ------------------------------------------------------------------
+   Scène de livraison (components/box/DeliveryScene.tsx)
+
+   Le camion part de l'écran du dev, passe devant l'usine, et s'arrête
+   DEVANT la maison — il ne doit jamais la traverser. Puis le colis
+   apparaît sur le pas de la porte, et le cycle reprend.
+
+   Tout est en CSS : aucun JS de séquençage. Les animations ne démarrent
+   qu'une fois la scène visible ([data-scene="true"]).
+   ------------------------------------------------------------------ */
+
+/* Le camion fait 116 de large. La maison commence à x=838 : il s'arrête
+   donc à 700 (bord avant = 816), puis attend pendant la livraison. */
+@keyframes truck-drive {
+  0%   { transform: translateX(150px); }
+  8%   { transform: translateX(150px); }
+  52%  { transform: translateX(700px); }
+  /* Marque l'arrêt le temps que le colis soit déposé. */
+  76%  { transform: translateX(700px); }
+  92%  { transform: translateX(1060px); }
+  100% { transform: translateX(1060px); }
+}
+
+@keyframes wheel-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Les roues ne tournent que pendant que le camion roule. */
+@keyframes wheel-cycle {
+  0%, 8%     { transform: rotate(0deg); }
+  52%        { transform: rotate(1080deg); }
+  76%        { transform: rotate(1080deg); }
+  92%, 100%  { transform: rotate(1800deg); }
+}
+
+@keyframes station-wake {
+  0%, 100% { opacity: 0.5; }
+  15%, 35% { opacity: 1; }
+}
+
+@keyframes smoke-rise {
+  0%   { transform: translateY(0) scale(0.5); opacity: 0; }
+  25%  { opacity: 0.28; }
+  100% { transform: translateY(-30px) scale(1.4); opacity: 0; }
+}
+
+@keyframes parcel-land {
+  0%, 58%   { opacity: 0; transform: translateY(-8px); }
+  70%, 100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spark-fly {
+  0%, 10%   { opacity: 0; transform: translateX(0); }
+  20%       { opacity: 1; }
+  45%       { opacity: 0; transform: translateX(130px); }
+  100%      { opacity: 0; transform: translateX(130px); }
+}
+
+/* État au repos.
+
+   Le camion est posé sur la route et le colis livré : sans JavaScript (ou
+   avant que useReveal ne déclenche), la scène doit rester lisible plutôt
+   que de montrer une route vide. */
+.truck { transform: translateX(700px); }
+.station { opacity: 0.85; }
+.parcel { opacity: 1; }
+.smoke { opacity: 0; }
+.spark { opacity: 0; }
+
+/* Démarrage à l'entrée dans le viewport. */
+[data-scene="true"] .truck {
+  animation: truck-drive 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+[data-scene="true"] .wheel {
+  animation: wheel-cycle 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  /* La rotation doit se faire autour du moyeu, pas du coin du SVG. */
+  transform-origin: 26px 142px;
+}
+[data-scene="true"] .wheel-rear {
+  transform-origin: 97px 142px;
+}
+[data-scene="true"] .station {
+  animation: station-wake 11s ease-in-out infinite;
+}
+/* Chaque station s'allume au moment où le camion arrive à sa hauteur. */
+[data-scene="true"] .station[data-station="1"] { animation-delay: 0s; }
+[data-scene="true"] .station[data-station="2"] { animation-delay: 2.2s; }
+[data-scene="true"] .station[data-station="4"] { animation-delay: 5.5s; }
+
+[data-scene="true"] .smoke {
+  animation: smoke-rise 3.2s ease-out infinite;
+}
+[data-scene="true"] .smoke-2 { animation-delay: 1.1s; }
+[data-scene="true"] .smoke-3 { animation-delay: 2.2s; }
+
+[data-scene="true"] .parcel {
+  animation: parcel-land 11s ease-out infinite;
+}
+[data-scene="true"] .spark {
+  animation: spark-fly 11s ease-in infinite;
+}
+
+/* ------------------------------------------------------------------
+   Boîtier 3D — géométrie
+   Proportions réelles d'un boîtier DVD : 135 × 190 × 14 mm.
+   Une seule variable --box-w pilote toute la mise à l'échelle.
+   ------------------------------------------------------------------ */
+.scene {
+  perspective: 1800px;
+  perspective-origin: 50% 45%;
+}
+
+.box3d {
+  position: relative;
+  width: var(--box-w);
+  height: calc(var(--box-w) * 1.407); /* 190 / 135 */
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.box-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+/* Reflet spéculaire qui balaie la jaquette. */
+.box-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.box-sheen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(255 255 255 / 0.22),
+    transparent
+  );
+  animation: sheen 5.5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+/* ------------------------------------------------------------------
+   prefers-reduced-motion
+   Une seule règle neutralise reveals, tilt, boîtier et pipeline.
+   Le contenu reste intégralement lisible : les reveals se figent en
+   position finale, jamais en état masqué.
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .box-sheen::before {
+    display: none;
+  }
+
+  /* Scène de livraison : le camion se fige au milieu de la route (sans quoi
+     il resterait hors cadre à gauche) et tout reste allumé. */
+  .truck {
+    transform: translateX(700px) !important;
+  }
+
+  .station {
+    opacity: 1 !important;
+  }
+
+  .spark {
+    display: none;
+  }
+
+  .parcel {
+    opacity: 1 !important;
+  }
+
+  .smoke {
+    display: none;
+  }
+}
+
+/* Sécurité : si JS ne s'exécute pas, rien ne doit rester invisible. */
+.no-js .reveal {
+  opacity: 1;
+  transform: none;
+}
