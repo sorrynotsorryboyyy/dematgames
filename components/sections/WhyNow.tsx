@@ -46,7 +46,7 @@ export function WhyNow({ t }: { t: Content }) {
       </div>
 
       <Reveal delay={2} className="mt-16 md:mt-20">
-        <BoxShelf caption={t.whyNow.shelfCaption} />
+        <BoxShelf caption={t.whyNow.collectionCaption} />
       </Reveal>
     </Section>
   );

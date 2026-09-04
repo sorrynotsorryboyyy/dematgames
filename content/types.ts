@@ -128,7 +128,7 @@ export interface Content {
     linePhysical: string;
     quote: string;
     body: string;
-    shelfCaption: string;
+    collectionCaption: string;
   };
 
   founding: {

@@ -112,7 +112,7 @@ export const en: Content = {
     quote:
       "A storefront closes, an account gets suspended, a licence expires — and a whole library is gone. Nobody can delete an object sitting on a shelf.",
     body: "Buying a game online means buying access: revocable, non-transferable, dependent on a service staying open. A physical copy belongs to whoever bought it. It can be lent, gifted, resold — and it outlives the platform that sold it.",
-    shelfCaption: "A shelf of indie games in physical editions.",
+    collectionCaption: "Independent games, in physical editions.",
   },
 
   founding: {

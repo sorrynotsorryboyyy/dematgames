@@ -118,7 +118,7 @@ export const fr: Content = {
     quote:
       "Une boutique ferme, un compte est suspendu, une licence expire — et une bibliothèque entière disparaît. Personne ne peut effacer un objet posé sur une étagère.",
     body: "Acheter un jeu en ligne, c'est acheter un droit d'accès : révocable, non transmissible, dépendant d'un service qui doit rester ouvert. Un exemplaire physique appartient à celui qui l'a acheté. Il se prête, s'offre, se revend, et survit à la plateforme qui l'a vendu.",
-    shelfCaption: "Une étagère de jeux indépendants en édition physique.",
+    collectionCaption: "Des jeux indépendants, en édition physique.",
   },
 
   founding: {

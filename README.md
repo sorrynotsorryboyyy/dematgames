@@ -152,22 +152,63 @@ simple lien — aucun JavaScript de traduction n'est chargé.
 Pour ajouter une langue : créer `content/xx.ts` typé `Content`, l'ajouter à
 `LANGS` dans `content/types.ts` et au dictionnaire de `lib/i18n.ts`.
 
-## Le formulaire — à brancher avant la mise en production
+## Le formulaire et les e-mails
 
 `app/api/apply/route.ts` valide la candidature (avec le **même module** que le
 client, `lib/validate.ts` : le serveur ne fait jamais confiance au navigateur),
-applique une limite de débit, filtre les bots… puis **se contente de journaliser
-la candidature**.
+applique une limite de débit, filtre les bots, **écrit dans Firestore**, puis
+**notifie par e-mail**.
 
-> ⚠️ **En l'état, les candidatures ne sont écrites nulle part.** Un redémarrage
-> du serveur les perd. Brancher une destination réelle avant tout lancement —
-> les emplacements sont marqués `TODO` dans le fichier (Resend, Supabase,
-> Airtable…).
+Protections en place : champ piège (honeypot), délai minimal de remplissage,
+limite de 5 envois par IP et par heure. La limite vit **en mémoire** : en
+serverless, chaque instance a son propre compteur, donc le quota réel est un
+multiple de 5. Suffisant contre un script naïf ; pour davantage, passer à
+Vercel KV ou Upstash.
 
-Protections déjà en place : champ piège (honeypot), délai minimal de
-remplissage, limite de 5 envois par IP et par heure. La limite est **en
-mémoire** : en déploiement multi-instance ou serverless, la remplacer par
-Upstash Redis ou Vercel KV.
+### Resend — mise en route
+
+Trois variables, dans `.env.local` **et** sur Vercel :
+
+```
+RESEND_API_KEY=re_…                    # Resend → API Keys
+RESEND_FROM=contact@dematgames.com     # adresse d'expédition
+NOTIFY_EMAIL=contact@dematgames.com    # où arrivent les candidatures
+```
+
+**Diagnostic** — répond à « pourquoi l'e-mail ne part-il pas ? » :
+
+```bash
+node scripts/check-mail.mjs          # inspecte, n'envoie rien
+node scripts/check-mail.mjs --send   # envoie réellement un message
+```
+
+### Vérifier le domaine
+
+Tant que `dematgames.com` n'est pas vérifié chez Resend, tout envoi depuis ce
+domaine est refusé (**403**), et le bac à sable n'écrit qu'à l'adresse du
+titulaire du compte. Posséder un domaine et l'avoir vérifié chez Resend sont
+deux choses distinctes.
+
+Sur `resend.com/domains`, ajouter le domaine puis créer chez le registraire les
+enregistrements indiqués — un `TXT` pour la signature DKIM, un `MX` et un `TXT`
+sur le sous-domaine `send`.
+
+> ⚠️ **Ne pas écraser les MX de la racine.** L'enregistrement `MX` demandé
+> porte sur `send.dematgames.com`, jamais sur `dematgames.com`. Remplacer les
+> MX racine couperait la réception du courrier du domaine.
+
+Compter de quelques minutes à quelques heures de propagation, puis relancer le
+script de diagnostic.
+
+### Ce qui se passe sans configuration
+
+Rien ne casse. `lib/notify.ts` est inerte sans clé : la candidature est
+enregistrée, la réponse au studio reste `ok`, et l'échec d'envoi est journalisé
+avec son motif. Faire échouer une candidature parce qu'un service tiers est
+indisponible ferait fuir un studio pour un problème qui n'est pas le sien.
+
+L'envoi en masse aux inscrits (`/admin`, onglet **Inscrits**) exige en revanche
+un domaine vérifié : l'écran l'indique explicitement.
 
 ## Design — thème clair
 
@@ -306,32 +347,42 @@ inerte.
 
 ## Ce qui reste à brancher
 
-| Chantier               | Emplacement prévu                            |
-| ---------------------- | -------------------------------------------- |
-| Destination formulaire | `app/api/apply/route.ts` (TODO)              |
-| Vraie authentification | remplacer `lib/session.tsx` (Auth.js + base) |
-| Paiement Stripe        | `app/api/stripe/` + bouton dans `CartView`   |
-| Catalogue réel         | remplacer `content/games.ts` par une source  |
-| Upload de builds       | `app/api/builds/`                            |
-| Commandes & suivi      | `app/api/orders/`                            |
-| Royalties              | `app/(app)/dashboard/royalties/`             |
+| Chantier            | Emplacement prévu                           |
+| ------------------- | ------------------------------------------- |
+| Paiement Stripe     | `app/api/stripe/` + bouton dans `CartView`  |
+| Upload de builds    | `app/api/builds/`                           |
+| Commandes & suivi   | `app/api/orders/`                           |
+| Royalties           | espace partenaire, à créer                  |
 
-Le panier et la session sont isolés derrière `useCart()` et `useSession()` :
-brancher un vrai backend revient à réimplémenter ces deux modules, sans
-toucher aux composants qui les consomment.
+Fait depuis la première version : authentification Firebase (Google),
+persistance des candidatures, catalogue réel, blog, administration, pages
+légales, notifications et campagnes e-mail.
+
+Le panier reste isolé derrière `useCart()` : brancher un paiement revient à
+réimplémenter ce module, sans toucher aux composants qui le consomment.
 
 ## Avant de mettre en ligne
 
-- [ ] Brancher une vraie destination pour le formulaire (`api/apply`)
-- [ ] Renseigner `NEXT_PUBLIC_SITE_URL` (voir `.env.example`)
-- [ ] Remplacer les liens sociaux `href="#"` dans `content/{fr,en}.ts`
-- [ ] Confirmer l'adresse de contact (`CONTACT_EMAIL` dans `lib/i18n.ts`)
-- [ ] Vérifier que le minimum de 50 exemplaires correspond bien à l'offre
-      (mentionné dans le hero, la section Problème, la FAQ et les métadonnées)
-- [ ] **Ne pas ouvrir la boutique** sans prestataire de paiement, CGV,
-      politique de remboursement et mentions légales (droit de rétractation,
-      TVA)
-- [ ] Remplacer la session simulée par une vraie authentification avant toute
-      collecte de compte réelle
-- [ ] Remplacer le catalogue fictif par les jeux réellement sous contrat
-- [ ] Remplacer la limite de débit en mémoire si déploiement serverless
+**De votre côté — bloquants :**
+
+- [ ] Vérifier `dematgames.com` chez Resend (DNS) — sans quoi aucun e-mail ne
+      part depuis le domaine
+- [ ] Reporter `RESEND_API_KEY`, `RESEND_FROM` et `NOTIFY_EMAIL` sur Vercel :
+      elles ne servent à rien en local seul
+- [ ] Compléter les mentions légales — les marqueurs `[À COMPLÉTER]` (SIRET,
+      adresse, forme juridique) sont **visibles en ligne**, délibérément
+
+**Recommandé :**
+
+- [ ] Déclarer `https://dematgames.com/sitemap.xml` dans Search Console
+- [ ] Remplacer les liens sociaux `href="#"` dans `content/{fr,en}.ts`, ou les
+      retirer — un lien mort nuit plus qu'il n'aide
+- [ ] Écrire la description de LoopTape (marqueur visible sur sa fiche)
+
+**Avant d'ouvrir la boutique :**
+
+- [ ] Prestataire de paiement, et retirer les garde-fous « boutique fermée »
+- [ ] Publier les CGV (rédigées, mais absentes du pied de page tant que la
+      vente n'est pas ouverte)
+- [ ] Désigner un médiateur de la consommation (art. L612-1)
+- [ ] Remplacer la limite de débit en mémoire par un compteur partagé

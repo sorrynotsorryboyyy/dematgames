@@ -5,13 +5,17 @@ import { GAMES } from "@/content/games";
 import { imageUrl } from "@/lib/images";
 
 /**
- * Étagère d'éditions physiques — l'image que la section « Pourquoi
+ * Alignement d'éditions physiques — l'image que la section « Pourquoi
  * maintenant ? » doit produire : une collection, pas un produit isolé.
  *
  * Le composant listait auparavant cinq titres INVENTÉS, codés en dur et
- * indépendants du catalogue. Ils ont disparu avec les jeux fictifs : cette
- * étagère ne montre plus que des éditions réelles, sans quoi elle
- * contredisait le propos de la section qu'elle illustre.
+ * indépendants du catalogue. Ils ont disparu avec les jeux fictifs : on ne
+ * montre plus que des éditions réelles, sans quoi l'illustration
+ * contredisait le propos de la section.
+ *
+ * La planche a également disparu : rendue par un rectangle plein, elle
+ * traversait toute la largeur au lieu de suggérer un meuble. Les ombres
+ * portées de chaque jaquette suffisent à poser les objets.
  *
  * Rotations et écarts se calculent depuis l'index et le total, jamais depuis
  * une table figée : le catalogue grandira, et cinq boîtiers alignés ne se
@@ -27,7 +31,7 @@ export function BoxShelf({ caption }: { caption: string }) {
 
   return (
     <figure className="relative">
-      <div className="relative flex items-end justify-center gap-5 overflow-x-auto px-4 pb-6 pt-10 sm:gap-8 md:gap-10 md:overflow-visible">
+      <div className="relative flex items-end justify-center gap-5 overflow-x-auto px-4 pb-10 pt-10 sm:gap-8 md:gap-10 md:overflow-visible">
         {shelf.map((game, i) => {
           // Éventail centré : le premier penche à gauche, le dernier à
           // droite. Avec un seul boîtier, l'inclinaison est nulle.
@@ -72,22 +76,15 @@ export function BoxShelf({ caption }: { caption: string }) {
         })}
       </div>
 
-      {/* La planche de l'étagère : une ligne et une ombre portée suffisent. */}
-      <div className="relative mx-auto h-px w-[94%] bg-gradient-to-r from-transparent via-slate to-transparent" />
-      <div
-        aria-hidden="true"
-        // L'ombre portait un noir à 55 % — un vestige du thème sombre
-        // d'origine, qui peignait une barre opaque sur le fond clair actuel.
-        // Une teinte proche des bordures, très diluée et sur une hauteur
-        // réduite, donne la profondeur sans dessiner de bandeau.
-        className="mx-auto h-10 w-[92%]"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(90, 84, 74, 0.18), transparent 72%)",
-        }}
-      />
+      {/* Plus de planche.
+          Elle était rendue par un <div> de hauteur fixe portant un dégradé,
+          c'est-à-dire un rectangle plein traversant toute la largeur : le
+          problème tenait à la NATURE de l'élément, pas à sa couleur — le
+          gris clair restait une barre, comme le noir avant lui.
+          Chaque jaquette porte déjà son ombre portée, qui épouse sa forme
+          et suffit à l'ancrer. */}
 
-      <figcaption className="mt-2 text-center font-mono text-[0.7rem] tracking-[0.18em] text-smoke/70 uppercase">
+      <figcaption className="mt-4 text-center font-mono text-[0.7rem] tracking-[0.18em] text-smoke/70 uppercase">
         {caption}
       </figcaption>
     </figure>
