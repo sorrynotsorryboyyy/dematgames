@@ -4,6 +4,7 @@ import {
   POST_STATUSES,
   type PostDoc,
   type PostStatus,
+  readPostLinks,
 } from "@/lib/schema";
 import { LANGS, type Lang } from "@/content/types";
 import { NextResponse } from "next/server";
@@ -26,6 +27,14 @@ const LIMITS = {
   body: 60_000,
   sponsor: 120,
   url: 500,
+  // Plus larges que les repères affichés dans l'admin (60 / 155) : ces
+  // repères disent où Google tronque, pas où la saisie devient invalide.
+  seoTitle: 200,
+  seoDescription: 400,
+  coverAlt: 300,
+  linkLabel: 120,
+  /** Au-delà, ce n'est plus une bibliographie mais une ferme à liens. */
+  links: 12,
 };
 
 function millis(value: unknown): number {
@@ -46,6 +55,11 @@ function toPost(id: string, d: Record<string, unknown>): PostDoc {
         title: String(c.title),
         excerpt: typeof c.excerpt === "string" ? c.excerpt : "",
         body: typeof c.body === "string" ? c.body : "",
+        // Optionnels : les articles écrits avant ces champs n'en ont pas.
+        seoTitle: typeof c.seoTitle === "string" ? c.seoTitle : undefined,
+        seoDescription:
+          typeof c.seoDescription === "string" ? c.seoDescription : undefined,
+        coverAlt: typeof c.coverAlt === "string" ? c.coverAlt : undefined,
       };
     }
   }
@@ -57,6 +71,7 @@ function toPost(id: string, d: Record<string, unknown>): PostDoc {
     content,
     categoryId: typeof d.categoryId === "string" ? d.categoryId : null,
     coverId: typeof d.coverId === "string" ? d.coverId : null,
+    links: readPostLinks(d.links),
     sponsored: d.sponsored === true,
     sponsorName: typeof d.sponsorName === "string" ? d.sponsorName : null,
     sponsorUrl: typeof d.sponsorUrl === "string" ? d.sponsorUrl : null,
@@ -95,12 +110,58 @@ interface PostInput {
   id?: string;
   slug?: string;
   status?: string;
-  content?: Partial<Record<Lang, { title?: string; excerpt?: string; body?: string }>>;
+  content?: Partial<
+    Record<
+      Lang,
+      {
+        title?: string;
+        excerpt?: string;
+        body?: string;
+        seoTitle?: string;
+        seoDescription?: string;
+        coverAlt?: string;
+      }
+    >
+  >;
   categoryId?: string | null;
   coverId?: string | null;
+  links?: unknown;
   sponsored?: boolean;
   sponsorName?: string | null;
   sponsorUrl?: string | null;
+}
+
+/**
+ * Valide les liens sortants soumis par l'administration.
+ *
+ * Le formulaire est réservé aux administrateurs, mais la requête reste une
+ * entrée réseau : elle est revalidée ici comme n'importe quelle autre. Seuls
+ * http(s) passent — un `javascript:` dans un href serait une faille — et le
+ * nombre est plafonné.
+ */
+function sanitizeLinks(raw: unknown): { label: string; url: string }[] {
+  if (!Array.isArray(raw)) return [];
+
+  const links: { label: string; url: string }[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const { label, url } = item as Record<string, unknown>;
+
+    const cleanLabel = str(label, LIMITS.linkLabel);
+    const cleanUrl = str(url, LIMITS.url);
+    if (!cleanLabel || !cleanUrl) continue;
+
+    try {
+      const parsed = new URL(cleanUrl);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") continue;
+    } catch {
+      continue;
+    }
+
+    links.push({ label: cleanLabel, url: cleanUrl });
+    if (links.length >= LIMITS.links) break;
+  }
+  return links;
 }
 
 /** Crée ou met à jour un article. */
@@ -124,6 +185,12 @@ async function handlePOST(request: Request) {
       title,
       excerpt: str(c?.excerpt, LIMITS.excerpt),
       body: str(c?.body, LIMITS.body),
+      // Champs facultatifs : une chaîne vide est stockée comme absente,
+      // sinon le repli sur le titre et le chapô ne se déclencherait pas.
+      seoTitle: str(c?.seoTitle, LIMITS.seoTitle) || undefined,
+      seoDescription:
+        str(c?.seoDescription, LIMITS.seoDescription) || undefined,
+      coverAlt: str(c?.coverAlt, LIMITS.coverAlt) || undefined,
     };
   }
   if (Object.keys(content).length === 0) {
@@ -182,6 +249,7 @@ async function handlePOST(request: Request) {
     content,
     categoryId: str(input.categoryId, 128) || null,
     coverId: str(input.coverId, 200) || null,
+    links: sanitizeLinks(input.links),
     sponsored,
     sponsorName: sponsored ? sponsorName : null,
     sponsorUrl: sponsored && sponsorUrl ? sponsorUrl : null,

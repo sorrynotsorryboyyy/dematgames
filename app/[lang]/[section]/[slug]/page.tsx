@@ -7,7 +7,11 @@ import { formatPrice, GAMES, getGame, PRICING_IS_INDICATIVE } from "@/content/ga
 import { getProduct, PRODUCTS } from "@/content/products";
 import { ProductDetail } from "@/components/shop/ProductDetail";
 import { PostArticle } from "@/components/blog/PostArticle";
-import { getPost, listCategories } from "@/lib/blog";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pickRelated, RelatedPosts } from "@/components/blog/RelatedPosts";
+import { getPost, listCategories, listPosts } from "@/lib/blog";
+import { imageUrl } from "@/lib/images";
+import { isPostVisible } from "@/lib/schema";
 import { isLang, LANGS, type Lang } from "@/content/types";
 import { brandAssets } from "@/lib/brand";
 import { getContent, path, ROUTES, SITE_URL } from "@/lib/i18n";
@@ -62,18 +66,47 @@ export async function generateMetadata({
     const post = await getPost(slug, lang);
     if (!post) return {};
     const content = post.content[lang]!;
+    // Les champs SEO priment quand ils sont renseignés : un bon titre de
+    // page et un bon titre pour Google ne sont pas toujours le même texte.
+    const seoTitle = content.seoTitle?.trim() || content.title;
+    const description = content.seoDescription?.trim() || content.excerpt;
+    const cover = imageUrl(post.coverId, { width: 1200, crop: "fill" });
+
     return {
       metadataBase: new URL(SITE_URL),
-      title: `${content.title} — dematgames.com`,
-      description: content.excerpt,
-      alternates: { canonical: `/${lang}/${section}/${slug}` },
+      title: `${seoTitle} — dematgames.com`,
+      description,
+      alternates: {
+        canonical: `/${lang}/${section}/${slug}`,
+        // Seules les langues où l'article existe RÉELLEMENT : un article
+        // peut n'être rédigé qu'en français, et déclarer une version
+        // anglaise qui renvoie 404 est une erreur que Search Console
+        // signale.
+        languages: Object.fromEntries(
+          LANGS.filter((l) => isPostVisible(post, l)).map((l) => [
+            l,
+            `/${l}/${ROUTES.blog[l]}/${slug}`,
+          ]),
+        ),
+      },
       openGraph: {
         type: "article",
-        title: content.title,
-        description: content.excerpt,
+        title: seoTitle,
+        description,
+        // Un lien partagé sans visuel est nettement moins cliqué, et le
+        // trafic social alimente le référencement.
+        images: cover ? [{ url: cover, alt: content.coverAlt ?? "" }] : undefined,
         publishedTime: post.publishedAt
           ? new Date(post.publishedAt).toISOString()
           : undefined,
+        modifiedTime: new Date(post.updatedAt).toISOString(),
+        authors: post.authorName ? [post.authorName] : undefined,
+      },
+      twitter: {
+        card: cover ? "summary_large_image" : "summary",
+        title: seoTitle,
+        description,
+        images: cover ? [cover] : undefined,
       },
     };
   }
@@ -126,9 +159,65 @@ export default async function GamePage({
     if (!post) notFound();
     const categories = await listCategories();
     const t = getContent(lang);
+    const content = post.content[lang]!;
+    const url = `${SITE_URL}/${lang}/${section}/${slug}`;
+    const cover = imageUrl(post.coverId, { width: 1200, crop: "fill" });
+
+    // Articles suivants, pour le maillage interne : sans lien entre eux, les
+    // articles restent des impasses.
+    const related = pickRelated(await listPosts(lang), post);
+
+    /**
+     * Données structurées.
+     *
+     * Chaque valeur vient d'un champ RÉELLEMENT renseigné : une donnée
+     * inventée dans un balisage est une déclaration fausse aux moteurs, et
+     * expose à une pénalité. Les champs absents sont omis, pas remplis.
+     */
+    const articleLd: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: content.seoTitle?.trim() || content.title,
+      description: content.seoDescription?.trim() || content.excerpt,
+      inLanguage: lang,
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      dateModified: new Date(post.updatedAt).toISOString(),
+      publisher: {
+        "@type": "Organization",
+        name: "dematgames.com",
+        url: SITE_URL,
+      },
+    };
+    if (post.publishedAt) {
+      articleLd.datePublished = new Date(post.publishedAt).toISOString();
+    }
+    if (post.authorName) {
+      articleLd.author = { "@type": "Person", name: post.authorName };
+    }
+    if (cover) articleLd.image = [cover];
+    // Signale un contenu commercial, en cohérence avec la mention affichée.
+    if (post.sponsored) articleLd.isAccessibleForFree = true;
+
+    // Fil d'Ariane : remplace l'URL brute dans les résultats de recherche.
+    const breadcrumbLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "dematgames.com",
+          item: `${SITE_URL}/${lang}`,
+        },
+        { "@type": "ListItem", position: 2, name: t.blog.title, item: `${SITE_URL}${path("blog", lang)}` },
+        { "@type": "ListItem", position: 3, name: content.title, item: url },
+      ],
+    };
 
     return (
       <>
+        <JsonLd data={articleLd} />
+        <JsonLd data={breadcrumbLd} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-ember focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-white"
@@ -160,6 +249,10 @@ export default async function GamePage({
                 lang={lang}
                 t={t}
               />
+
+              <div className="mx-auto max-w-[46rem]">
+                <RelatedPosts posts={related} lang={lang} t={t} />
+              </div>
             </div>
           </div>
         </main>

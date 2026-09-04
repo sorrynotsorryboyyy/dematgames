@@ -1,3 +1,4 @@
+import { PostCover } from "@/components/blog/PostCover";
 import { TiltCard } from "@/components/ui/TiltCard";
 import type { Content, Lang } from "@/content/types";
 import { path } from "@/lib/i18n";
@@ -50,6 +51,12 @@ export function BlogIndex({
                     href={path("blog", lang, post.slug)}
                     className="flex h-full flex-col rounded-[inherit] p-6"
                   >
+                    <PostCover
+                      post={post}
+                      lang={lang}
+                      size="card"
+                      className="mb-5"
+                    />
                     <div className="flex flex-wrap items-center gap-2">
                       {category && (
                         <span

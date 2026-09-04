@@ -1,9 +1,15 @@
 import type { MetadataRoute } from "next";
 import { GAMES } from "@/content/games";
 import { LANGS } from "@/content/types";
+import { listPosts } from "@/lib/blog";
 import { ROUTES, SITE_URL, type RouteKey } from "@/lib/i18n";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+/**
+ * Le sitemap est ASYNCHRONE : les articles vivent dans Firestore, pas dans
+ * le code. `listPosts` retourne un tableau vide si la base est
+ * indisponible — le build ne peut donc pas échouer à cause d'elle.
+ */
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
   const entries: MetadataRoute.Sitemap = [];
 
@@ -71,6 +77,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
             LANGS.map((l) => [l, `${SITE_URL}/${l}/${ROUTES[key][l]}`]),
           ),
         },
+      });
+    }
+  }
+
+  // --- Articles de blog ---
+  //
+  // Ils étaient absents du sitemap : seule la page d'index y figurait. Un
+  // article publié restait donc invisible pour un moteur jusqu'à ce qu'il le
+  // découvre par un lien, alors que l'index n'affiche que les derniers.
+  for (const lang of LANGS) {
+    // listPosts filtre déjà sur les articles publiés ET disponibles dans la
+    // langue : un brouillon ne peut pas se retrouver ici.
+    for (const post of await listPosts(lang)) {
+      entries.push({
+        url: `${SITE_URL}/${lang}/${ROUTES.blog[lang]}/${post.slug}`,
+        // La date de modification réelle, pas celle du build : c'est elle
+        // qui indique à un moteur s'il vaut la peine de repasser.
+        lastModified: new Date(post.updatedAt),
+        changeFrequency: "monthly",
+        priority: 0.6,
       });
     }
   }

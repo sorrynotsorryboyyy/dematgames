@@ -333,6 +333,9 @@ export const en: Content = {
       "Workshop notes, studio stories, and what we learn making things you can hold.",
     seeAll: "All articles →",
     readMore: "Read the article",
+    tocTitle: "Contents",
+    sourcesTitle: "Sources and further reading",
+    relatedTitle: "Read next",
   },
 
   faq: {

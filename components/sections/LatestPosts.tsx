@@ -1,3 +1,4 @@
+import { PostCover } from "@/components/blog/PostCover";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -67,6 +68,12 @@ export function LatestPosts({
                   href={path("blog", lang, post.slug)}
                   className="flex h-full flex-col rounded-[inherit] p-6"
                 >
+                  <PostCover
+                    post={post}
+                    lang={lang}
+                    size="card"
+                    className="mb-5"
+                  />
                   <div className="flex flex-wrap items-center gap-2">
                     {category && (
                       <span

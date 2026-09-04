@@ -82,6 +82,38 @@ export interface PostContent {
   excerpt: string;
   /** Corps de l'article, en Markdown. */
   body: string;
+  /**
+   * Titre destiné aux résultats de recherche.
+   *
+   * Optionnel : sans lui, `title` fait l'affaire. Il existe parce qu'un bon
+   * titre de page et un bon titre pour Google ne sont pas toujours le même
+   * texte — le second doit tenir en ~60 caractères, au-delà desquels il est
+   * tronqué.
+   */
+  seoTitle?: string;
+  /** Méta-description. Repli sur `excerpt`. ~155 caractères utiles. */
+  seoDescription?: string;
+  /**
+   * Texte alternatif de l'image de couverture.
+   *
+   * Par langue : la description d'une image n'est pas la même en français et
+   * en anglais. Sans lui, la couverture est traitée comme décorative
+   * (`alt=""`) — jamais affublée d'un texte deviné.
+   */
+  coverAlt?: string;
+}
+
+/**
+ * Lien sortant cité en fin d'article.
+ *
+ * Ces liens sont ÉDITORIAUX : ils sortent en `noopener noreferrer` mais
+ * SANS `nofollow`. Un lien vers une source légitime est normal, et le
+ * `nofollow` systématique envoie un signal de méfiance inutile. Le
+ * `nofollow` reste réservé au sponsoring, où il est obligatoire.
+ */
+export interface PostLink {
+  label: string;
+  url: string;
 }
 
 export interface CategoryDoc {
@@ -104,6 +136,8 @@ export interface PostDoc {
   categoryId: string | null;
   /** Identifiant Cloudinary de l'image de couverture. */
   coverId: string | null;
+  /** Sources et liens utiles, rendus en fin d'article. */
+  links: PostLink[];
   /**
    * Article sponsorisé.
    *
@@ -127,6 +161,28 @@ export interface PostDoc {
 }
 
 /** Un article est-il visible publiquement dans cette langue ? */
+/**
+ * Lit la liste de liens d'un document Firestore.
+ *
+ * Défensif par principe : le document vient de la base, pas du code. Une
+ * entrée sans libellé ou sans URL exploitable est écartée plutôt que rendue
+ * à moitié, et seuls http(s) passent — un `javascript:` dans un href serait
+ * une faille.
+ */
+export function readPostLinks(raw: unknown): PostLink[] {
+  if (!Array.isArray(raw)) return [];
+  const links: PostLink[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const { label, url } = item as Record<string, unknown>;
+    if (typeof label !== "string" || typeof url !== "string") continue;
+    if (!/^https?:\/\//i.test(url.trim())) continue;
+    if (!label.trim()) continue;
+    links.push({ label: label.trim(), url: url.trim() });
+  }
+  return links;
+}
+
 export function isPostVisible(post: PostDoc, lang: Lang): boolean {
   if (post.status !== "published") return false;
   const content = post.content[lang];

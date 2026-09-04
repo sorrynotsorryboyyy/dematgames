@@ -1,5 +1,6 @@
 import type { LegalDoc } from "@/content/legal";
 import type { Lang } from "@/content/types";
+import { slugify } from "@/lib/slugify";
 
 /**
  * Mise en page commune aux documents légaux.
@@ -66,19 +67,4 @@ export function LegalPage({ doc, lang }: { doc: LegalDoc; lang: Lang }) {
       </div>
     </article>
   );
-}
-
-/**
- * Ancre lisible à partir d'un titre.
- *
- * Les titres sont en français ou en anglais : on retire les accents avant de
- * filtrer, sinon « Propriété intellectuelle » donnerait « propri-t- ».
- */
-function slugify(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
 }

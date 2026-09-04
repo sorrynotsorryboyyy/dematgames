@@ -340,6 +340,9 @@ export const fr: Content = {
       "Coulisses d'atelier, retours de studios, et ce qu'on apprend en fabriquant des objets.",
     seeAll: "Tous les articles →",
     readMore: "Lire l'article",
+    tocTitle: "Sommaire",
+    sourcesTitle: "Sources et liens utiles",
+    relatedTitle: "À lire ensuite",
   },
 
   faq: {

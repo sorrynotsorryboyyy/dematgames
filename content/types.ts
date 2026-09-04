@@ -325,6 +325,12 @@ export interface Content {
     latestIntro: string;
     seeAll: string;
     readMore: string;
+    /** Titre du sommaire d'un article. */
+    tocTitle: string;
+    /** Titre du bloc de sources et liens utiles, en fin d'article. */
+    sourcesTitle: string;
+    /** Titre du bloc « à lire ensuite ». */
+    relatedTitle: string;
   };
 
   faq: {

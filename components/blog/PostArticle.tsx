@@ -1,5 +1,11 @@
+import { PostCover } from "@/components/blog/PostCover";
+import {
+  extractHeadings,
+  TableOfContents,
+} from "@/components/blog/TableOfContents";
 import type { Content, Lang } from "@/content/types";
 import type { CategoryDoc, PostDoc } from "@/lib/schema";
+import { slugify } from "@/lib/slugify";
 
 /**
  * Un article de blog.
@@ -94,9 +100,51 @@ export function PostArticle({
         </p>
       )}
 
+      <PostCover post={post} lang={lang} size="article" className="mt-8" />
+
+      <TableOfContents
+        headings={extractHeadings(content.body)}
+        label={t.blog.tocTitle}
+      />
+
       <div className="mt-10 space-y-5">
         <Markdown source={content.body} />
       </div>
+
+      {/* Sources : des liens ÉDITORIAUX, donc sans `nofollow`. Citer une
+          source légitime est normal ; le `nofollow` systématique envoie un
+          signal de méfiance inutile. Il reste réservé au sponsoring, où il
+          est obligatoire. */}
+      {post.links.length > 0 && (
+        <section
+          aria-labelledby="sources-title"
+          className="mt-14 rounded-xl border border-slate bg-carbon p-5 sm:p-6"
+        >
+          <h2
+            id="sources-title"
+            className="font-mono text-[0.72rem] tracking-[0.16em] text-smoke uppercase"
+          >
+            {t.blog.sourcesTitle}
+          </h2>
+          <ul className="mt-4 space-y-2.5">
+            {post.links.map((link) => (
+              <li key={link.url} className="flex items-baseline gap-3">
+                <span aria-hidden="true" className="text-ember">
+                  ↗
+                </span>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[0.97rem] leading-[1.6] text-ember underline underline-offset-4 transition-colors hover:text-chalk"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </article>
   );
 }
@@ -108,10 +156,28 @@ export function PostArticle({
 function Markdown({ source }: { source: string }) {
   const blocks = source.split(/\n{2,}/).filter((b) => b.trim());
 
+  // Compteur de doublons : deux sections peuvent porter le même titre, mais
+  // deux `id` identiques rendraient la seconde inatteignable. La règle doit
+  // rester celle d'extractHeadings, sans quoi le sommaire pointerait à côté.
+  const seen = new Map<string, number>();
+  const anchorFor = (text: string) => {
+    const base = slugify(text);
+    if (!base) return undefined;
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return count === 0 ? base : `${base}-${count + 1}`;
+  };
+
   return (
     <>
       {blocks.map((block, i) => {
         const trimmed = block.trim();
+
+        // Image seule sur sa ligne : ![texte alternatif](url)
+        const image = trimmed.match(IMAGE_RE);
+        if (image) {
+          return <BodyImage key={i} alt={image[1]} src={image[2]} />;
+        }
 
         if (trimmed.startsWith("### ")) {
           return (
@@ -121,9 +187,16 @@ function Markdown({ source }: { source: string }) {
           );
         }
         if (trimmed.startsWith("## ")) {
+          const text = trimmed.slice(3);
           return (
-            <h2 key={i} className="display pt-6 text-[1.5rem] text-chalk">
-              {inline(trimmed.slice(3))}
+            <h2
+              key={i}
+              // L'ancre rend la section citable par son URL : on peut lier
+              // un passage précis plutôt que l'article entier.
+              id={anchorFor(text)}
+              className="display scroll-mt-24 pt-6 text-[1.5rem] text-chalk"
+            >
+              {inline(text)}
             </h2>
           );
         }
@@ -163,6 +236,43 @@ function Markdown({ source }: { source: string }) {
         );
       })}
     </>
+  );
+}
+
+/**
+ * Image dans le corps d'un article : ![texte alternatif](url)
+ *
+ * Seules les URL http(s) sont acceptées : un `javascript:` dans un src
+ * serait une faille, et le contenu vient de la base plutôt que du code.
+ */
+const IMAGE_RE =
+  /^!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)$/;
+
+function BodyImage({ alt, src }: { alt: string; src: string }) {
+  return (
+    <figure className="my-8">
+      {/* eslint-disable-next-line @next/next/no-img-element -- les
+          visuels d'articles sont servis par Cloudinary, qui applique
+          déjà format, qualité et densité. */}
+      <img
+        src={src}
+        // Un alt vide rend l'image DÉCORATIVE. On n'invente jamais de
+        // texte alternatif : une description fausse est pire qu'aucune.
+        alt={alt.trim()}
+        // Dimensions indicatives : sans elles, la page saute au
+        // chargement (CLS), que Google prend en compte au classement.
+        width={1200}
+        height={750}
+        loading="lazy"
+        decoding="async"
+        className="block h-auto w-full rounded-xl border border-slate"
+      />
+      {alt.trim() && (
+        <figcaption className="mt-3 text-center text-[0.85rem] text-smoke">
+          {alt.trim()}
+        </figcaption>
+      )}
+    </figure>
   );
 }
 

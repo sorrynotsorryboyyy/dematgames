@@ -6,6 +6,7 @@ import {
   isPostVisible,
   type CategoryDoc,
   type PostDoc,
+  readPostLinks,
 } from "@/lib/schema";
 import { LANGS, type Lang } from "@/content/types";
 
@@ -39,6 +40,11 @@ function toPost(id: string, d: Record<string, unknown>): PostDoc {
         title: String(c.title),
         excerpt: typeof c.excerpt === "string" ? c.excerpt : "",
         body: typeof c.body === "string" ? c.body : "",
+        // Optionnels : les articles écrits avant ces champs n'en ont pas.
+        seoTitle: typeof c.seoTitle === "string" ? c.seoTitle : undefined,
+        seoDescription:
+          typeof c.seoDescription === "string" ? c.seoDescription : undefined,
+        coverAlt: typeof c.coverAlt === "string" ? c.coverAlt : undefined,
       };
     }
   }
@@ -49,6 +55,7 @@ function toPost(id: string, d: Record<string, unknown>): PostDoc {
     content,
     categoryId: typeof d.categoryId === "string" ? d.categoryId : null,
     coverId: typeof d.coverId === "string" ? d.coverId : null,
+    links: readPostLinks(d.links),
     sponsored: d.sponsored === true,
     sponsorName: typeof d.sponsorName === "string" ? d.sponsorName : null,
     sponsorUrl: typeof d.sponsorUrl === "string" ? d.sponsorUrl : null,
