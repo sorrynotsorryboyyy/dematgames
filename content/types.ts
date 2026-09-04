@@ -220,7 +220,12 @@ export interface Content {
      */
     notice: string;
     cta: string;
-    /** Puce portée par le premier titre réel du catalogue. */
+    /**
+     * Puce distinguant nos propres éditions des exemples de format.
+     *
+     * Volontairement pas « premier titre » : le libellé doit rester juste
+     * quand un deuxième, puis un troisième jeu réel rejoint le catalogue.
+     */
     firstTitle: string;
   };
 

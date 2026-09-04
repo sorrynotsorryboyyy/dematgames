@@ -37,10 +37,17 @@ export function GameCard({
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <CategoryChip id={game.category} lang={lang} size="sm" />
-          {/* Distingue le titre réel des exemples de format qui l'entourent. */}
-          {game.featured && (
+          {/* Distingue nos éditions des exemples de format qui les entourent. */}
+          {game.ownEdition && (
             <span className="rounded-full border border-ember/45 bg-[var(--color-ember-soft)] px-2.5 py-1 text-[0.7rem] font-semibold tracking-wide text-ember uppercase">
               {t.preview.firstTitle}
+            </span>
+          )}
+          {/* Sur un jeu pour enfants, la tranche d'âge est le premier
+              critère d'achat : elle doit se lire sans ouvrir la fiche. */}
+          {game.ageRating && (
+            <span className="rounded-full border border-slate bg-ash px-2.5 py-1 text-[0.7rem] font-semibold tracking-wide text-smoke">
+              {game.ageRating[lang]}
             </span>
           )}
         </div>

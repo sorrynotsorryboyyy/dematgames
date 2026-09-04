@@ -9,15 +9,17 @@ import Link from "next/link";
 /**
  * Aperçu du catalogue sur la page d'accueil.
  *
- * La mention « ces éditions sont des exemples » est placée AVANT la grille,
- * délibérément : sous les cartes, elle serait lue après coup, une fois
- * l'illusion installée. Les jeux affichés ne sont pas encore de vrais
- * partenaires, et le visiteur doit le savoir avant de les regarder.
+ * La grille mêle nos propres éditions (puce « Édition DematGames ») et des
+ * exemples de format. La mention qui les distingue est placée AVANT la
+ * grille, délibérément : sous les cartes, elle serait lue après coup, une
+ * fois l'illusion installée.
  */
 export function CataloguePreview({ t, lang }: { t: Content; lang: Lang }) {
-  // Trois suffisent à montrer le format : au-delà, la section devient une
-  // boutique alors que la boutique n'ouvre pas encore.
-  const sample = GAMES.slice(0, 3);
+  // Nos éditions d'abord, puis des exemples de format pour compléter la
+  // ligne. Trois au total : au-delà, la section devient une boutique alors
+  // que la boutique n'ouvre pas encore.
+  const own = GAMES.filter((g) => g.ownEdition);
+  const sample = [...own, ...GAMES.filter((g) => !g.ownEdition)].slice(0, 3);
 
   return (
     <Section tone="void" labelledBy="preview-title">

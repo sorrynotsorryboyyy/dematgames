@@ -87,8 +87,28 @@ export interface Game {
    */
   firmPrice?: boolean;
 
-  /** Mis en avant sur l'accueil et en tête de catalogue. */
+  /**
+   * Titre édité par DematGames, par opposition aux exemples de format.
+   *
+   * Distinct de `featured` : plusieurs jeux peuvent être nos éditions, un
+   * seul occupe la vitrine de l'accueil.
+   */
+  ownEdition?: boolean;
+
+  /** Titre mis en avant sur l'accueil. Un seul à la fois. */
   featured?: boolean;
+
+  /**
+   * Tranche d'âge conseillée, telle qu'imprimée sur la jaquette.
+   *
+   * C'est le critère d'achat d'un parent : il doit être lisible dès la
+   * carte de catalogue, sans avoir à ouvrir la fiche ni à scruter le visuel.
+   *
+   * Chaîne libre et bilingue plutôt qu'un intervalle numérique : les
+   * classifications varient (« 3-6 ans », « PEGI 3 », « 7+ ») et une
+   * structure rigide obligerait à la refondre au premier cas particulier.
+   */
+  ageRating?: Record<Lang, string>;
 }
 
 export const GAMES: Game[] = [
@@ -113,6 +133,7 @@ export const GAMES: Game[] = [
     coverId: "dematgames/covers/looptape-elevator",
     productShot: true,
     firmPrice: true,
+    ownEdition: true,
     featured: true,
     category: "story",
     year: 2026,
@@ -123,6 +144,66 @@ export const GAMES: Game[] = [
     description: {
       fr: "[À COMPLÉTER : description du jeu]",
       en: "[TO COMPLETE: game description]",
+    },
+    editions: [
+      {
+        tier: "standard",
+        priceEUR: 16.99,
+        includes: {
+          fr: ["DVD du jeu", "Boîtier standard", "Jaquette imprimée"],
+          en: ["Game DVD", "Standard case", "Printed cover"],
+        },
+      },
+      {
+        tier: "collector",
+        priceEUR: 49,
+        limited: 50,
+        includes: {
+          fr: [
+            "DVD du jeu",
+            "Boîtier collector",
+            "Jaquette imprimée",
+            "Édition numérotée sur 50",
+          ],
+          en: [
+            "Game DVD",
+            "Collector case",
+            "Printed cover",
+            "Numbered edition out of 50",
+          ],
+        },
+      },
+    ],
+  },
+  /**
+   * LudiLand | Noël — deuxième titre RÉEL du catalogue.
+   *
+   * Comme LoopTape, le visuel fourni est un rendu du boîtier fini : d'où
+   * `productShot`. La description reprend uniquement ce que la jaquette
+   * affiche (3-6 ans, plusieurs niveaux, activités ludiques, thème de Noël) ;
+   * aucune mécanique de jeu n'est inventée.
+   */
+  {
+    slug: "ludiland-noel",
+    title: "LudiLand",
+    subtitle: { fr: "Noël", en: "Christmas" },
+    studio: "DematGames",
+    // Le bleu nuit de la jaquette : sert au repli CSS sans Cloudinary.
+    hue: 214,
+    coverId: "dematgames/covers/ludiland-noel",
+    productShot: true,
+    firmPrice: true,
+    ownEdition: true,
+    category: "family",
+    year: 2026,
+    ageRating: { fr: "3-6 ans", en: "Ages 3-6" },
+    tagline: {
+      fr: "Un Noël à explorer, à toucher, à recommencer autant qu'on veut.",
+      en: "A Christmas to explore, to touch, to start over as often as you like.",
+    },
+    description: {
+      fr: "LudiLand emmène les 3-6 ans dans un village enneigé où chaque cadeau ouvre une activité. Plusieurs niveaux de difficulté accompagnent l'enfant à son rythme, et les jeux mêlent découverte et apprentissage — on avance parce qu'on s'amuse, pas parce qu'on est chronométré. Aucun compte, aucune connexion : le disque suffit.",
+      en: "LudiLand takes 3-to-6-year-olds into a snowy village where every present opens an activity. Several difficulty levels follow the child at their own pace, and the games blend discovery with learning — you progress because it is fun, not because a timer says so. No account, no connection: the disc is all you need.",
     },
     editions: [
       {

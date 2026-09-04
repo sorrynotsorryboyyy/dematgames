@@ -233,9 +233,9 @@ export const en: Content = {
     eyebrow: "The catalogue",
     title: "Our first title, and what surrounds it.",
     notice:
-      "LoopTape | Elevator is our first physical edition. The other artwork illustrates the format and finish: these are examples, not games on sale.",
+      "Our own DematGames editions are real. The other artwork illustrates the format and finish: these are examples, not games on sale.",
     cta: "See the full catalogue",
-    firstTitle: "First title",
+    firstTitle: "DematGames edition",
   },
 
   submit: {
@@ -251,7 +251,7 @@ export const en: Content = {
     intro:
       "Physical editions from our partner studios. Every copy is made to order and shipped from France.",
     pricingNotice:
-      "The shop isn't open yet. LoopTape's prices are final; those of the other editions, shown as format examples, remain indicative.",
+      "The shop isn't open yet. Prices for our own editions are final; those of the others, shown as format examples, remain indicative.",
     priceFrom: "from",
     filterAll: "All games",
     filterLabel: "Filter by category",

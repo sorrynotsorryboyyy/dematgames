@@ -69,6 +69,11 @@ const ASSETS = [
     publicId: "dematgames/covers/looptape-elevator",
     label: "LoopTape | Elevator",
   },
+  {
+    file: "public/brand/ludilandjaquette.png",
+    publicId: "dematgames/covers/ludiland-noel",
+    label: "LudiLand | Noël",
+  },
 ];
 
 let failures = 0;

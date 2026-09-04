@@ -257,6 +257,12 @@ export default async function GamePage({
                   {game.year}
                 </p>
 
+                {game.ageRating && (
+                  <p className="mt-4 inline-block rounded-lg border border-slate bg-carbon px-3 py-1.5 text-[0.9rem] font-semibold text-chalk">
+                    {game.ageRating[lang]}
+                  </p>
+                )}
+
                 <p className="mt-6 text-[1.05rem] leading-[1.75] text-smoke">
                   {game.description[lang]}
                 </p>
