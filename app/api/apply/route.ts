@@ -9,13 +9,15 @@ import {
 import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { clientIp, rateLimited } from "@/lib/rate-limit";
 import { COLLECTIONS } from "@/lib/schema";
+import { notifyApplication } from "@/lib/notify";
 import { NextResponse } from "next/server";
 
 /**
  * Réception des candidatures « Founding developers ».
  *
- * État actuel : la candidature est validée puis journalisée. Rien n'est
- * persisté — c'est le point d'accroche à brancher (voir TODO plus bas).
+ * La candidature est validée, écrite dans Firestore, puis notifiée par
+ * e-mail. Aucune de ces deux dernières étapes ne peut faire échouer la
+ * réponse : le studio ne doit pas payer une panne d'infrastructure.
  *
  * La validation est rejouée ici avec le même module que le client : le
  * navigateur n'est jamais une source de confiance.
@@ -118,24 +120,18 @@ export async function POST(request: Request) {
     console.log("[apply] nouvelle candidature (non persistée)", application);
   }
 
-  // ------------------------------------------------------------------
-  // TODO — notification. Les candidatures sont persistées dans Firestore
-  // et visibles dans /admin, mais personne n'est prévenu à leur arrivée.
+  // --- Notification ---
   //
-  // 1) Email de notification (Resend) :
-  //    import { Resend } from "resend";
-  //    await new Resend(process.env.RESEND_API_KEY).emails.send({
-  //      from: "site@dematgames.com",
-  //      to: "hello@dematgames.com",
-  //      subject: `Nouveau jeu : ${application.game}`,
-  //      text: JSON.stringify(application, null, 2),
-  //    });
-  //
-  // 2) Persistance (Supabase) :
-  //    await supabase.from("applications").insert(application);
-  //
-  // 3) Ou simplement une ligne dans Airtable / Notion / Google Sheets.
-  // ------------------------------------------------------------------
+  // JAMAIS bloquante : la candidature est déjà en base. Faire échouer la
+  // réponse parce qu'un service tiers est indisponible ferait fuir un studio
+  // pour un problème qui n'est pas le sien.
+  const mail = await notifyApplication(application);
+  if (!mail.ok) {
+    console.error("[apply] notification non envoyée —", mail.error);
+    // On journalise la candidature en clair : si l'e-mail n'est pas parti,
+    // les journaux restent le dernier endroit où la retrouver rapidement.
+    console.log("[apply] candidature reçue", application);
+  }
 
   return NextResponse.json({ ok: true });
 }

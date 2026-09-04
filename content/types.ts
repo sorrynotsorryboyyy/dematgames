@@ -338,6 +338,14 @@ export interface Content {
     items: Item[];
   };
 
+  /** Page 404. */
+  notFound: {
+    code: string;
+    title: string;
+    body: string;
+    home: string;
+  };
+
   footer: {
     tagline: string;
     navTitle: string;

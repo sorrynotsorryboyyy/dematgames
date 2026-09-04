@@ -383,6 +383,13 @@ export const fr: Content = {
     ],
   },
 
+  notFound: {
+    code: "404",
+    title: "Cette page n'existe pas.",
+    body: "Le lien est peut-être ancien, ou l'adresse comporte une erreur. Voici par où reprendre.",
+    home: "Retour à l'accueil",
+  },
+
   footer: {
     tagline:
       "Éditions physiques pour jeux indépendants. Fabriquées en Europe, à la demande.",

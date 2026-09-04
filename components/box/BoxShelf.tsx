@@ -76,10 +76,14 @@ export function BoxShelf({ caption }: { caption: string }) {
       <div className="relative mx-auto h-px w-[94%] bg-gradient-to-r from-transparent via-slate to-transparent" />
       <div
         aria-hidden="true"
-        className="mx-auto h-16 w-[92%]"
+        // L'ombre portait un noir à 55 % — un vestige du thème sombre
+        // d'origine, qui peignait une barre opaque sur le fond clair actuel.
+        // Une teinte proche des bordures, très diluée et sur une hauteur
+        // réduite, donne la profondeur sans dessiner de bandeau.
+        className="mx-auto h-10 w-[92%]"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 78%)",
+            "linear-gradient(to bottom, rgba(90, 84, 74, 0.18), transparent 72%)",
         }}
       />
 

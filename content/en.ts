@@ -376,6 +376,13 @@ export const en: Content = {
     ],
   },
 
+  notFound: {
+    code: "404",
+    title: "This page does not exist.",
+    body: "The link may be outdated, or the address contains a typo. Here is where to pick things up.",
+    home: "Back to home",
+  },
+
   footer: {
     tagline:
       "Physical editions for independent games. Made in Europe, on demand.",

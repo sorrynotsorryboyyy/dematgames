@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminApplications } from "@/components/admin/AdminApplications";
+import { AdminSubscribers } from "@/components/admin/AdminSubscribers";
 import { AdminCategories } from "@/components/admin/AdminCategories";
 import { AdminPosts } from "@/components/admin/AdminPosts";
 import { AdminUsers } from "@/components/admin/AdminUsers";
@@ -24,10 +25,16 @@ import { useState } from "react";
  * obtiendra aucune donnée.
  */
 
-type Tab = "applications" | "posts" | "categories" | "users";
+type Tab =
+  | "applications"
+  | "subscribers"
+  | "posts"
+  | "categories"
+  | "users";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "applications", label: "Candidatures" },
+  { id: "subscribers", label: "Inscrits" },
   { id: "posts", label: "Articles" },
   { id: "categories", label: "Catégories" },
   { id: "users", label: "Utilisateurs" },
@@ -113,6 +120,7 @@ export function AdminShell({ lang }: { lang: Lang }) {
         className="mt-8 outline-none"
       >
         {tab === "applications" && <AdminApplications getToken={getToken} />}
+        {tab === "subscribers" && <AdminSubscribers getToken={getToken} />}
         {tab === "posts" && <AdminPosts getToken={getToken} />}
         {tab === "categories" && <AdminCategories getToken={getToken} />}
         {tab === "users" && (

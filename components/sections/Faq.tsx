@@ -51,22 +51,38 @@ export function Faq({ faq }: { faq: Content["faq"] }) {
                   aria-expanded={flipped}
                   className={`flip-card ${flipped ? "is-flipped" : ""}`}
                 >
-                  {/* Recto : la question */}
-                  <span className="flip-face card flex flex-col justify-between p-7 text-left">
-                    <span className="display text-[1.1rem] leading-snug text-chalk">
-                      {item.title}
-                    </span>
+                  {/* Recto : la question, encadrée par le numéro et le « + ».
+                      Le numéro occupe le haut : sans lui, une question courte
+                      laissait une grande surface vide au-dessus. */}
+                  <span className="flip-face card flex flex-col justify-between p-6 text-left sm:p-7">
                     <span
                       aria-hidden="true"
-                      className="mt-6 inline-flex size-8 items-center justify-center rounded-full border border-slate text-ember transition-colors"
+                      className="numeric font-mono text-[0.72rem] tracking-[0.18em] text-smoke/70"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+
+                    <span className="display text-[1.08rem] leading-snug text-chalk">
+                      {item.title}
+                    </span>
+
+                    <span
+                      aria-hidden="true"
+                      className="inline-flex size-8 items-center justify-center rounded-full border border-slate bg-ash text-ember transition-transform"
                     >
                       +
                     </span>
                   </span>
 
                   {/* Verso : la réponse. Présent dans le DOM en permanence. */}
-                  <span className="flip-face flip-back card border-ember/40 bg-[var(--color-ember-soft)] p-7 text-left">
-                    <span className="block text-[0.98rem] leading-[1.7] text-chalk">
+                  <span className="flip-face flip-back card flex-col gap-3 border-ember/40 bg-[var(--color-ember-soft)] p-6 text-left sm:p-7">
+                    <span
+                      aria-hidden="true"
+                      className="numeric font-mono text-[0.72rem] tracking-[0.18em] text-ember/70"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="block text-[0.97rem] leading-[1.7] text-chalk">
                       {item.body}
                     </span>
                   </span>

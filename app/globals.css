@@ -406,8 +406,11 @@ body {
   display: block;
   width: 100%;
   /* Hauteur fixe : les deux faces sont superposées en absolu, le conteneur
-     n'a donc aucune hauteur naturelle à reprendre. */
-  min-height: 13rem;
+     n'a donc aucune hauteur naturelle à reprendre.
+     Réduite depuis 13rem : la carte porte désormais un numéro en tête, et la
+     question est centrée — le vide qui restait sous une question courte a
+     disparu. */
+  min-height: 11rem;
   transform-style: preserve-3d;
   transition: transform 0.6s var(--ease-out-expo);
   cursor: pointer;
@@ -426,6 +429,23 @@ body {
   overflow: auto;
 }
 
+/* Le recto au repos : `--color-ash` (blanc pur) sur une section `void`
+   (#fbfaf8) ne se détachait pas — la carte paraissait vide. On part du gris
+   des sections alternées, et le blanc devient l'état de survol : le contraste
+   sert alors à signaler l'interaction plutôt qu'à rien. */
+.flip-card .flip-face:first-child {
+  background-color: var(--color-carbon);
+  border-left: 2px solid var(--color-ember);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.flip-card:hover .flip-face:first-child,
+.flip-card:focus-visible .flip-face:first-child {
+  background-color: var(--color-ash);
+}
+
 .flip-back {
   transform: rotateY(180deg);
 }
@@ -437,7 +457,7 @@ body {
 
 @media (min-width: 768px) {
   .flip-card {
-    min-height: 14rem;
+    min-height: 12rem;
   }
 }
 
