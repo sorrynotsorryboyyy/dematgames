@@ -60,7 +60,6 @@ export const en: Content = {
       "On demand, no overstock",
       "Tracked shipping",
     ],
-    scrollHint: "Explore",
   },
 
   how: {
@@ -231,11 +230,10 @@ export const en: Content = {
 
   preview: {
     eyebrow: "The catalogue",
-    title: "Our first title, and what surrounds it.",
+    title: "Our physical editions.",
     notice:
-      "Our own DematGames editions are real. The other artwork illustrates the format and finish: these are examples, not games on sale.",
+      "Every title is pressed, printed and shipped by us. The shop opens soon: the editions below cannot be ordered yet.",
     cta: "See the full catalogue",
-    firstTitle: "DematGames edition",
   },
 
   submit: {
@@ -251,7 +249,7 @@ export const en: Content = {
     intro:
       "Physical editions from our partner studios. Every copy is made to order and shipped from France.",
     pricingNotice:
-      "The shop isn't open yet. Prices for our own editions are final; those of the others, shown as format examples, remain indicative.",
+      "The shop isn't open yet: no title can be ordered for now. The prices shown are final.",
     priceFrom: "from",
     filterAll: "All games",
     filterLabel: "Filter by category",
@@ -269,6 +267,7 @@ export const en: Content = {
     kindHardware: "Hardware",
     kindBundle: "Bundle",
     productsTitle: "Accessories and bundles",
+    upcoming: "Coming soon",
     pickGame: "Choose your game",
     pickGamePlaceholder: "Pick a title from the catalogue",
   },

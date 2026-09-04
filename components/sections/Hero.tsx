@@ -1,6 +1,7 @@
-import { GameArtwork } from "@/components/shop/GameArtwork";
+import { FloatingCover } from "@/components/box/FloatingCover";
 import { GameBox } from "@/components/box/GameBox";
 import { GAMES } from "@/content/games";
+import { imageUrl } from "@/lib/images";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import type { Content, Lang } from "@/content/types";
@@ -18,9 +19,13 @@ import { ANCHORS, path } from "@/lib/i18n";
  * secondaire vers le formulaire des studios fondateurs.
  */
 export function Hero({ t, lang }: { t: Content; lang: Lang }) {
-  // Le titre mis en avant, ou rien : sans jeu marqué `featured`, on retombe
-  // sur le boîtier générique plutôt que d'afficher un produit au hasard.
-  const featured = GAMES.find((g) => g.featured);
+  // Le titre en vitrine d'abord, puis les autres éditions maison. Deux au
+  // maximum : à trois, la composition en éventail devient illisible sur un
+  // écran de téléphone.
+  const shown = [
+    ...GAMES.filter((g) => g.featured),
+    ...GAMES.filter((g) => g.ownEdition && !g.featured),
+  ].slice(0, 2);
 
   return (
     <section className="relative isolate overflow-hidden bg-void pt-[4.5rem]">
@@ -101,27 +106,45 @@ export function Hero({ t, lang }: { t: Content; lang: Lang }) {
           </ul>
         </div>
 
-        {/* Le visuel : le titre mis en avant, cliquable vers sa fiche.
+        {/* Les jaquettes du catalogue, cliquables vers leur fiche.
             Auparavant un boîtier générique codé en dur ; l'accueil montre
-            désormais un vrai produit du catalogue. */}
+            désormais les éditions réelles. */}
         <div className="flex items-center justify-center lg:justify-end">
           <div className="py-8 lg:py-0">
-            {featured ? (
-              <Link
-                href={path("shop", lang, featured.slug)}
-                aria-label={`${featured.title} — ${featured.studio}`}
-                className="block rounded-xl transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember motion-safe:hover:scale-[1.02]"
-              >
-                <GameArtwork
-                  game={featured}
-                  size="hero"
-                  className="max-w-[340px]"
-                />
-              </Link>
+            {shown.length > 0 ? (
+              <div className="flex items-center justify-center -space-x-10 sm:-space-x-14 lg:-space-x-16">
+                {shown.map((game, i) => {
+                  const cover = imageUrl(game.coverId, { width: 640 });
+                  if (!cover) return null;
+                  return (
+                    <Link
+                      key={game.slug}
+                      href={path("shop", lang, game.slug)}
+                      aria-label={`${game.title} — ${game.studio}`}
+                      // Le survol passe la jaquette au-dessus de sa voisine :
+                      // sans cela, celle de derrière resterait tronquée
+                      // pendant qu'on la regarde.
+                      className="rounded-[6px] transition-[z-index] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember hover:z-20"
+                      style={{ zIndex: shown.length - i }}
+                    >
+                      <FloatingCover
+                        src={cover}
+                        // La première jaquette domine ; la seconde est en
+                        // retrait, ce qui donne la profondeur.
+                        width={i === 0 ? 250 : 210}
+                        rotate={i === 0 ? -4 : 6}
+                        // Déphasage : à l'unisson, la boucle CSS se voit.
+                        delay={i * 1200}
+                        priority={i === 0}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
             ) : (
               <GameBox
-                title="Nocturne"
-                studio="Pale Moth Studio"
+                title="dematgames"
+                studio="Édition physique"
                 width="clamp(196px, 30vw, 320px)"
                 pose="hero"
                 hue={8}
@@ -129,14 +152,6 @@ export function Hero({ t, lang }: { t: Content; lang: Lang }) {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Indicateur de scroll, discret. */}
-      <div className="relative z-[2] hidden justify-center pb-10 md:flex">
-        <span className="animate-scroll-hint flex flex-col items-center gap-2 text-[0.75rem] font-medium tracking-wide text-smoke">
-          {t.hero.scrollHint}
-          <span aria-hidden="true" className="block h-8 w-px bg-gradient-to-b from-smoke to-transparent" />
-        </span>
       </div>
     </section>
   );

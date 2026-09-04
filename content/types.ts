@@ -109,7 +109,6 @@ export interface Content {
     ctaPrimary: string;
     ctaSecondary: string;
     reassurance: string[];
-    scrollHint: string;
   };
 
   how: {
@@ -220,13 +219,6 @@ export interface Content {
      */
     notice: string;
     cta: string;
-    /**
-     * Puce distinguant nos propres éditions des exemples de format.
-     *
-     * Volontairement pas « premier titre » : le libellé doit rester juste
-     * quand un deuxième, puis un troisième jeu réel rejoint le catalogue.
-     */
-    firstTitle: string;
   };
 
   /** Page dédiée aux studios — sortie de l'accueil. */
@@ -261,6 +253,13 @@ export interface Content {
     kindBundle: string;
     /** Titre du bloc « accessoires et packs » dans le catalogue. */
     productsTitle: string;
+    /**
+     * Bandeau porté par les jaquettes des titres pas encore commandables.
+     *
+     * Du TEXTE, jamais une simple désaturation : la couleur ne porte jamais
+     * seule l'information, et un lecteur d'écran doit annoncer le statut.
+     */
+    upcoming: string;
     /** Sélecteur de jeu sur la fiche d'un pack. */
     pickGame: string;
     pickGamePlaceholder: string;

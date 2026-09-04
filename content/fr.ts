@@ -66,7 +66,6 @@ export const fr: Content = {
       "À la demande, sans surstock",
       "Expédition suivie",
     ],
-    scrollHint: "Découvrir",
   },
 
   how: {
@@ -237,11 +236,10 @@ export const fr: Content = {
 
   preview: {
     eyebrow: "Le catalogue",
-    title: "Notre premier titre, et ce qui l'entoure.",
+    title: "Nos éditions physiques.",
     notice:
-      "Nos éditions signées DematGames sont réelles. Les autres visuels illustrent le format et la finition : ce sont des exemples, pas des jeux en vente.",
+      "Chaque titre est pressé, imprimé et expédié par nos soins. La boutique ouvre bientôt : les éditions ci-dessous ne sont pas encore commandables.",
     cta: "Voir tout le catalogue",
-    firstTitle: "Édition DematGames",
   },
 
   submit: {
@@ -257,7 +255,7 @@ export const fr: Content = {
     intro:
       "Les éditions physiques de nos studios partenaires. Chaque exemplaire est fabriqué à la commande et expédié depuis la France.",
     pricingNotice:
-      "La boutique n'est pas encore ouverte. Les prix de nos éditions sont fermes ; ceux des autres, présentées comme exemples de format, restent indicatifs.",
+      "La boutique n'est pas encore ouverte : aucun titre n'est commandable pour l'instant. Les prix affichés sont fermes.",
     priceFrom: "à partir de",
     filterAll: "Tous les jeux",
     filterLabel: "Filtrer par catégorie",
@@ -275,6 +273,7 @@ export const fr: Content = {
     kindHardware: "Matériel",
     kindBundle: "Pack",
     productsTitle: "Accessoires et packs",
+    upcoming: "Bientôt disponible",
     pickGame: "Choisissez votre jeu",
     pickGamePlaceholder: "Sélectionnez un titre du catalogue",
   },

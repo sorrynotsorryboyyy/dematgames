@@ -31,17 +31,30 @@ export type ArtworkSize = keyof typeof WIDTHS;
 export function GameArtwork({
   game,
   size,
+  upcomingLabel,
   className = "",
 }: {
   game: Game;
   size: ArtworkSize;
+  /**
+   * Libellé « bientôt disponible ». Fourni = le statut est signalé.
+   *
+   * La fiche produit ne le passe pas : elle annonce déjà que la boutique
+   * n'est pas ouverte, et un troisième rappel encombrerait.
+   */
+  upcomingLabel?: string;
   className?: string;
 }) {
   const cover = imageUrl(game.coverId, { width: WIDTHS[size] });
 
+  // Absent vaut « pas encore en vente » : un oubli ne doit jamais laisser
+  // croire qu'un titre est commandable.
+  const upcoming = (game.releaseStatus ?? "upcoming") === "upcoming";
+  const flagged = upcoming && Boolean(upcomingLabel);
+
   // --- Photo produit : le boîtier est déjà dans l'image ---
   if (game.productShot && cover) {
-    return (
+    const image = (
       /* Cloudinary livre déjà le format (WebP/AVIF selon le navigateur),
          la qualité et la densité via f_auto,q_auto,dpr_auto. Repasser par
          next/image ajouterait une seconde optimisation, facturée en plus,
@@ -58,8 +71,23 @@ export function GameArtwork({
         // Le visuel du haut de page ne doit pas attendre le défilement.
         loading={size === "hero" ? "eager" : "lazy"}
         decoding="async"
-        className={`h-auto w-full max-w-full object-contain ${className}`}
+        className={`h-auto w-full max-w-full object-contain transition-[filter] duration-300 ${
+          flagged ? "opacity-90 grayscale-[0.72]" : ""
+        } ${className}`}
       />
+    );
+
+    if (!flagged) return image;
+
+    return (
+      <span className="relative inline-block max-w-full">
+        {image}
+        {/* Le statut est du TEXTE, pas une nuance de couleur : lisible par
+            un lecteur d'écran comme par qui ne distingue pas le grisé. */}
+        <span className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 bg-chalk/85 px-2 py-1.5 text-center text-[0.68rem] font-semibold tracking-[0.14em] text-void uppercase">
+          {upcomingLabel}
+        </span>
+      </span>
     );
   }
 
@@ -70,7 +98,7 @@ export function GameArtwork({
     card: { pose: "shelf" as const, width: "clamp(110px, 30vw, 140px)" },
   }[size];
 
-  return (
+  const boxNode = (
     <GameBox
       title={game.title}
       studio={game.studio}
@@ -84,5 +112,19 @@ export function GameArtwork({
       showDisc={size !== "card"}
       className={className}
     />
+  );
+
+  if (!flagged) return boxNode;
+
+  // Même signalement que sur une photo produit : le boîtier généré doit
+  // annoncer son statut de la même façon, sans quoi deux jeux au même
+  // statut se liraient différemment selon qu'ils ont une image ou non.
+  return (
+    <span className="relative inline-block opacity-90 grayscale-[0.72]">
+      {boxNode}
+      <span className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 bg-chalk/85 px-2 py-1.5 text-center text-[0.68rem] font-semibold tracking-[0.14em] text-void uppercase">
+        {upcomingLabel}
+      </span>
+    </span>
   );
 }

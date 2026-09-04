@@ -32,17 +32,16 @@ export function GameCard({
         {/* Boîtier 3D ou photo produit : GameArtwork tranche. Le boîtier
             n'est pas interactif ici, la carte porte déjà le tilt. */}
         <div className="flex justify-center py-4">
-          <GameArtwork game={game} size="card" className="max-w-[140px]" />
+          <GameArtwork
+            game={game}
+            size="card"
+            upcomingLabel={t.shop.upcoming}
+            className="max-w-[140px]"
+          />
         </div>
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <CategoryChip id={game.category} lang={lang} size="sm" />
-          {/* Distingue nos éditions des exemples de format qui les entourent. */}
-          {game.ownEdition && (
-            <span className="rounded-full border border-ember/45 bg-[var(--color-ember-soft)] px-2.5 py-1 text-[0.7rem] font-semibold tracking-wide text-ember uppercase">
-              {t.preview.firstTitle}
-            </span>
-          )}
           {/* Sur un jeu pour enfants, la tranche d'âge est le premier
               critère d'achat : elle doit se lire sans ouvrir la fiche. */}
           {game.ageRating && (
