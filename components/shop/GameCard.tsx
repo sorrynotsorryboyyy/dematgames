@@ -1,4 +1,4 @@
-import { GameBox } from "@/components/box/GameBox";
+import { GameArtwork } from "@/components/shop/GameArtwork";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { CategoryChip } from "@/components/shop/CategoryChip";
 import { formatPrice, lowestPrice, type Game } from "@/content/games";
@@ -29,25 +29,30 @@ export function GameCard({
         href={path("shop", lang, game.slug)}
         className="flex h-full flex-col rounded-[inherit] p-6"
       >
-        {/* Le boîtier n'est pas interactif ici : la carte porte déjà le tilt. */}
+        {/* Boîtier 3D ou photo produit : GameArtwork tranche. Le boîtier
+            n'est pas interactif ici, la carte porte déjà le tilt. */}
         <div className="flex justify-center py-4">
-          <GameBox
-            title={game.title}
-            studio={game.studio}
-            hue={game.hue}
-            pose="shelf"
-            width="clamp(110px, 30vw, 140px)"
-            interactive={false}
-            float={false}
-            showDisc={false}
-          />
+          <GameArtwork game={game} size="card" className="max-w-[140px]" />
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 flex flex-wrap items-center gap-2">
           <CategoryChip id={game.category} lang={lang} size="sm" />
+          {/* Distingue le titre réel des exemples de format qui l'entourent. */}
+          {game.featured && (
+            <span className="rounded-full border border-ember/45 bg-[var(--color-ember-soft)] px-2.5 py-1 text-[0.7rem] font-semibold tracking-wide text-ember uppercase">
+              {t.preview.firstTitle}
+            </span>
+          )}
         </div>
 
-        <h3 className="display mt-3 text-[1.15rem] text-chalk">{game.title}</h3>
+        <h3 className="display mt-3 text-[1.15rem] text-chalk">
+          {game.title}
+          {game.subtitle && (
+            <span className="block text-[0.82rem] font-medium tracking-[0.18em] text-ember uppercase">
+              {game.subtitle[lang]}
+            </span>
+          )}
+        </h3>
         <p className="mt-1 text-[0.88rem] text-smoke">{game.studio}</p>
         <p className="mt-3 flex-1 text-[0.95rem] leading-[1.6] text-smoke">
           {game.tagline[lang]}

@@ -236,11 +236,12 @@ export const fr: Content = {
   },
 
   preview: {
-    eyebrow: "Aperçu",
-    title: "À quoi ressemblera le catalogue.",
+    eyebrow: "Le catalogue",
+    title: "Notre premier titre, et ce qui l'entoure.",
     notice:
-      "Ces éditions illustrent le format et la finition. Le catalogue réel ouvrira avec nos premiers studios partenaires.",
+      "LoopTape | Elevator est notre première édition physique. Les autres visuels illustrent le format et la finition : ce sont des exemples, pas des jeux en vente.",
     cta: "Voir tout le catalogue",
+    firstTitle: "Premier titre",
   },
 
   submit: {
@@ -256,7 +257,7 @@ export const fr: Content = {
     intro:
       "Les éditions physiques de nos studios partenaires. Chaque exemplaire est fabriqué à la commande et expédié depuis la France.",
     pricingNotice:
-      "Aperçu : la boutique n'est pas encore ouverte et les prix affichés sont indicatifs.",
+      "La boutique n'est pas encore ouverte. Les prix de LoopTape sont fermes ; ceux des autres éditions, présentées comme exemples de format, restent indicatifs.",
     priceFrom: "à partir de",
     filterAll: "Tous les jeux",
     filterLabel: "Filtrer par catégorie",

@@ -54,9 +54,106 @@ export interface Game {
   tagline: Record<Lang, string>;
   description: Record<Lang, string>;
   editions: GameEdition[];
+
+  /**
+   * Sous-titre, rendu sous le titre.
+   *
+   * Séparé de `title` à dessein : ce dernier alimente aussi la jaquette
+   * générée et les lignes du panier, où « LoopTape | Elevator » serait trop
+   * long et se couperait mal.
+   */
+  subtitle?: Record<Lang, string>;
+
+  /**
+   * Le visuel est-il une PHOTO PRODUIT déjà finie, plutôt qu'une jaquette
+   * à plat ?
+   *
+   * LoopTape est fourni comme un rendu 3D du boîtier, disque compris.
+   * L'insérer dans `GameBox` donnerait une boîte dans une boîte : on
+   * l'affiche donc tel quel, sans boîtier autour.
+   *
+   * À retirer le jour où une jaquette à plat (ratio 135:190, sans boîtier
+   * ni fond) est disponible : le jeu retrouvera alors le boîtier 3D animé
+   * des autres, sans rien changer au code.
+   */
+  productShot?: boolean;
+
+  /**
+   * Prix ferme, échappant à la mention « tarifs indicatifs ».
+   *
+   * `PRICING_IS_INDICATIVE` couvre le catalogue de démonstration, dont les
+   * prix sont des ordres de grandeur. Un titre réel dont le prix est arrêté
+   * ne doit pas hériter de cette réserve.
+   */
+  firmPrice?: boolean;
+
+  /** Mis en avant sur l'accueil et en tête de catalogue. */
+  featured?: boolean;
 }
 
 export const GAMES: Game[] = [
+  /**
+   * LoopTape | Elevator — PREMIER TITRE RÉEL du catalogue.
+   *
+   * Les autres entrées de ce fichier sont fictives (voir l'avertissement en
+   * tête). Celle-ci ne l'est pas : le jeu, le studio, les prix et le tirage
+   * sont réels et fournis par l'éditeur.
+   *
+   * La description reste un marqueur visible tant qu'elle n'a pas été
+   * écrite : inventer le pitch du jeu de quelqu'un d'autre serait pire
+   * qu'un champ manifestement vide.
+   */
+  {
+    slug: "looptape-elevator",
+    title: "LoopTape",
+    subtitle: { fr: "Elevator", en: "Elevator" },
+    studio: "DematGames",
+    // Le rouge de la jaquette : sert au repli CSS si Cloudinary est absent.
+    hue: 356,
+    coverId: "dematgames/covers/looptape-elevator",
+    productShot: true,
+    firmPrice: true,
+    featured: true,
+    category: "story",
+    year: 2026,
+    tagline: {
+      fr: "Found footage. 3 h 17 du matin. L'ascenseur ne s'arrête plus.",
+      en: "Found footage. 3:17 in the morning. The elevator won't stop.",
+    },
+    description: {
+      fr: "[À COMPLÉTER : description du jeu]",
+      en: "[TO COMPLETE: game description]",
+    },
+    editions: [
+      {
+        tier: "standard",
+        priceEUR: 16.99,
+        includes: {
+          fr: ["DVD du jeu", "Boîtier standard", "Jaquette imprimée"],
+          en: ["Game DVD", "Standard case", "Printed cover"],
+        },
+      },
+      {
+        tier: "collector",
+        priceEUR: 49,
+        limited: 50,
+        includes: {
+          fr: [
+            "DVD du jeu",
+            "Boîtier collector",
+            "Jaquette imprimée",
+            "Édition numérotée sur 50",
+          ],
+          en: [
+            "Game DVD",
+            "Collector case",
+            "Printed cover",
+            "Numbered edition out of 50",
+          ],
+        },
+      },
+    ],
+  },
   {
     slug: "nocturne",
     title: "Nocturne",
@@ -249,10 +346,21 @@ export function lowestPrice(game: Game): number {
 }
 
 /** Formatage monétaire localisé. */
+/**
+ * Formate un prix en euros.
+ *
+ * Les centimes ne sont affichés QUE s'il y en a : « 49 € » reste plus lisible
+ * que « 49,00 € » dans une grille, mais 16,99 doit s'écrire « 16,99 € ».
+ *
+ * Sans `maximumFractionDigits`, Intl arrondit à l'entier par défaut ici et
+ * 16,99 s'affichait « 17 € » — un prix faux, à la hausse, sur une boutique.
+ */
 export function formatPrice(amount: number, lang: Lang): string {
+  const hasCents = !Number.isInteger(amount);
   return new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-GB", {
     style: "currency",
     currency: "EUR",
-    minimumFractionDigits: 0,
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: hasCents ? 2 : 0,
   }).format(amount);
 }

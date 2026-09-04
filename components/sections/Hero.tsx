@@ -1,4 +1,7 @@
+import { GameArtwork } from "@/components/shop/GameArtwork";
 import { GameBox } from "@/components/box/GameBox";
+import { GAMES } from "@/content/games";
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import type { Content, Lang } from "@/content/types";
 import { ANCHORS, path } from "@/lib/i18n";
@@ -15,6 +18,10 @@ import { ANCHORS, path } from "@/lib/i18n";
  * secondaire vers le formulaire des studios fondateurs.
  */
 export function Hero({ t, lang }: { t: Content; lang: Lang }) {
+  // Le titre mis en avant, ou rien : sans jeu marqué `featured`, on retombe
+  // sur le boîtier générique plutôt que d'afficher un produit au hasard.
+  const featured = GAMES.find((g) => g.featured);
+
   return (
     <section className="relative isolate overflow-hidden bg-void pt-[4.5rem]">
       {/* Grille technique — côté « digital » du contraste, estompée aux bords. */}
@@ -94,16 +101,32 @@ export function Hero({ t, lang }: { t: Content; lang: Lang }) {
           </ul>
         </div>
 
-        {/* Le boîtier */}
+        {/* Le visuel : le titre mis en avant, cliquable vers sa fiche.
+            Auparavant un boîtier générique codé en dur ; l'accueil montre
+            désormais un vrai produit du catalogue. */}
         <div className="flex items-center justify-center lg:justify-end">
           <div className="py-8 lg:py-0">
-            <GameBox
-              title="Nocturne"
-              studio="Pale Moth Studio"
-              width="clamp(196px, 30vw, 320px)"
-              pose="hero"
-              hue={8}
-            />
+            {featured ? (
+              <Link
+                href={path("shop", lang, featured.slug)}
+                aria-label={`${featured.title} — ${featured.studio}`}
+                className="block rounded-xl transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember motion-safe:hover:scale-[1.02]"
+              >
+                <GameArtwork
+                  game={featured}
+                  size="hero"
+                  className="max-w-[340px]"
+                />
+              </Link>
+            ) : (
+              <GameBox
+                title="Nocturne"
+                studio="Pale Moth Studio"
+                width="clamp(196px, 30vw, 320px)"
+                pose="hero"
+                hue={8}
+              />
+            )}
           </div>
         </div>
       </div>

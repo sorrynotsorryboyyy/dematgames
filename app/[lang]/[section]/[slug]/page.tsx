@@ -1,4 +1,4 @@
-import { GameBox } from "@/components/box/GameBox";
+import { GameArtwork } from "@/components/shop/GameArtwork";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { CategoryChip } from "@/components/shop/CategoryChip";
@@ -230,13 +230,11 @@ export default async function GamePage({
             /* --- Jeu --- */
             <div className="mt-8 grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
               {/* Visuel */}
-              <div className="flex items-start justify-center rounded-2xl border border-slate bg-carbon py-14">
-                <GameBox
-                  title={game.title}
-                  studio={game.studio}
-                  hue={game.hue}
-                  pose="hero"
-                  width="clamp(190px, 34vw, 260px)"
+              <div className="flex items-start justify-center rounded-2xl border border-slate bg-carbon p-6 py-14">
+                <GameArtwork
+                  game={game}
+                  size="detail"
+                  className="max-w-[320px]"
                 />
               </div>
 
@@ -248,6 +246,12 @@ export default async function GamePage({
                   {game.title}
                 </h1>
 
+                {game.subtitle && (
+                  <p className="mt-2 text-[1.05rem] font-medium tracking-[0.24em] text-ember uppercase">
+                    {game.subtitle[lang]}
+                  </p>
+                )}
+
                 <p className="mt-3 text-[1rem] text-smoke">
                   {t.shop.byStudio} {game.studio} · {t.shop.releasedIn}{" "}
                   {game.year}
@@ -257,7 +261,10 @@ export default async function GamePage({
                   {game.description[lang]}
                 </p>
 
-                {PRICING_IS_INDICATIVE && (
+                {/* Un titre au prix arrêté n'hérite pas de la réserve
+                    « tarifs indicatifs », qui vaut pour le catalogue de
+                    démonstration. */}
+                {PRICING_IS_INDICATIVE && !game.firmPrice && (
                   <p className="mt-6 rounded-lg border border-slate bg-carbon px-4 py-2.5 text-[0.88rem] text-smoke">
                     {t.shop.pricingNotice}
                   </p>

@@ -212,9 +212,16 @@ export interface Content {
   preview: {
     eyebrow: string;
     title: string;
-    /** Mention affichée AU-DESSUS de la grille : ces jeux sont des exemples. */
+    /**
+     * Mention affichée AU-DESSUS de la grille.
+     *
+     * Le catalogue mêle un titre réel et des exemples de format : la
+     * distinction doit être lue avant les cartes, pas après.
+     */
     notice: string;
     cta: string;
+    /** Puce portée par le premier titre réel du catalogue. */
+    firstTitle: string;
   };
 
   /** Page dédiée aux studios — sortie de l'accueil. */
